@@ -1,3 +1,5 @@
 node_modules/
 Master Bible/
 .claude/
+.vercel
+.env*.local
