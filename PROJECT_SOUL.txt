@@ -1,0 +1,95 @@
+UX MASTER CHIEF — PROJECT SOUL
+================================
+Last updated: 28 April 2026
+
+This file defines the operational rules for all work on UX Master Chief.
+Every Claude session reads this before making changes.
+
+---
+
+PRODUCT NAME
+------------
+UX Master Chief (or UXMC for short).
+Drop "eFriend" references — that was the old name.
+
+---
+
+DESIGN SYSTEM
+-------------
+Design system is canonical at /docs/design-system/.
+All future surface work references these files:
+  - design-tokens.css  — CSS variables (colours, typography, spacing)
+  - components.md      — component patterns and locked styling
+  - patterns.md        — behavioural patterns and interactions
+
+Do NOT redesign in Claude Design.
+Implement in code against the locked DS.
+
+---
+
+LANGUAGE
+--------
+UK English exclusively.
+- colour not color
+- centre not center
+- organisation not organization
+
+---
+
+UI FRAMEWORK
+------------
+Metronic v9.4.0 (Tailwind).
+Maintain HTML/CSS/UX structure exactly.
+Do not replace Metronic patterns with custom implementations.
+
+---
+
+IMPLEMENTATION PATTERN
+----------------------
+Audit → Implement → Polish → Proceed.
+
+1. AUDIT: Understand current state before changing anything.
+2. IMPLEMENT: Make the required changes.
+3. POLISH: Fix any drift or inconsistencies introduced.
+4. PROCEED: Move to next task only when current is complete.
+
+---
+
+COPY RULES
+----------
+1. Sentence case everywhere (buttons, headings, nav, menus, labels)
+2. "you" not "the user"
+3. Numerals in body text (10 not ten)
+4. No emoji in product surfaces (Lucide icons substitute)
+5. No hype words: unlock, empower, revolutionise, seamless, game-changing
+
+---
+
+COMMIT HYGIENE
+--------------
+Each meaningful unit of work gets its own commit.
+Clear commit messages:
+  - Phase 1: Extract design-tokens.css from locked exports
+  - Polish: Step 4 — fix power-user accordion collapsed state
+  - Fix: Step 5 — hero image upload validation
+
+---
+
+GIT RULES
+---------
+Never push to main without explicit instruction.
+Never deploy without explicit instruction.
+Work on feature/polish branches.
+Duncan reviews before merge.
+
+---
+
+VERIFICATION
+------------
+Verify with actual data before proposing architectural changes.
+Run dev server and click through after every meaningful change.
+Do not break working flows.
+
+---
+
+End of PROJECT_SOUL.txt
