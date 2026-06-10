@@ -3,3 +3,10 @@ Master Bible/
 .claude/
 .vercel
 .env*.local
+
+# Design bundles / handoff artifacts — keep on disk, not in git
+design-bundle.zip
+uxmc dynamic renderer.zip
+renderer_handoff_bundle/
+design_handoff_dashboard_chrome/
+*.zip
