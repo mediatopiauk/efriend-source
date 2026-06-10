@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lens 4 · Creative / Immersive — Brightside</title>
+<style>
+/* —— Inlined from _shared/tokens.css for standalone use —— */
+/* Brightside fixture tokens — shared across lens comps.
+   Lens comps are wireframe-fidelity per Phase A scope. Visual polish is Phase B. */
+:root {
+  /* Foundation */
+  --f-white: #ffffff;
+  --f-wash:  #f7f5f1;
+  --f-pale:  #ebe7df;
+  --f-mid:   #8a8378;
+  --f-slate: #4a463f;
+  --f-dark:  #1c1a17;
+
+  /* Brightside brand */
+  --site-primary:    #0d7a70;   /* teal */
+  --site-primary-700:#085f57;
+  --site-cta:        #c2185b;   /* magenta */
+  --site-cta-700:    #99124a;
+
+  /* Module accent colours (for the dock — not lens chrome) */
+  --mod-voice:   #c2185b;
+  --mod-booking: #0d7a70;
+  --mod-reviews: #c2410c;
+  --mod-chatbot: #7c3aed;
+
+  /* Typography — Phase B Typography Mood Library will override these */
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-body:    'Inter', -apple-system, system-ui, sans-serif;
+
+  /* Spacing scale */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+  --s-9: 96px; --s-10: 128px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  color: var(--f-dark);
+  background: var(--f-white);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+/* Brightside content fixture is HARDCODED into each lens file —
+   this is wireframe-fidelity, not the production data-driven render. */
+
+/* Wireframe placeholder hatching */
+.wf-img {
+  background:
+    repeating-linear-gradient(45deg, var(--f-pale) 0 8px, var(--f-wash) 8px 16px);
+  border: 1px solid var(--f-pale);
+  position: relative;
+}
+.wf-img::after {
+  content: attr(data-label);
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--f-mid); font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* Banner showing the lens name + phase note */
+.lens-tag {
+  position: fixed; left: 16px; top: 16px; z-index: 200;
+  background: var(--f-dark); color: var(--f-white);
+  padding: 6px 12px; border-radius: 4px;
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 600;
+}
+.lens-tag b { color: #ffd166; font-weight: 600; }
+
+</style>
+<style>
+  body { background: #0a0908; color: #f5f1ea; }
+  h1, h2, h3 { color: #f5f1ea; }
+
+  .l4-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    padding: 24px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%);
+  }
+  .l4-nav .brand { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: #fff; }
+  .l4-nav nav { display: flex; gap: 32px; font-size: 13.5px; color: rgba(255,255,255,0.85); letter-spacing: 0.04em; }
+  .l4-nav nav a { text-decoration: none; }
+  .l4-nav .cta {
+    border: 1px solid rgba(255,255,255,0.5);
+    padding: 8px 18px; border-radius: 999px;
+    font-size: 13px; font-weight: 500; color: #fff;
+    text-decoration: none;
+    transition: all 200ms var(--ease);
+  }
+  .l4-nav .cta:hover { background: #fff; color: #0a0908; }
+
+  /* Full-viewport hero */
+  .l4-hero {
+    position: relative;
+    height: 100vh; min-height: 600px;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+  }
+  .l4-hero .wf-img { position: absolute; inset: 0; }
+  .l4-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 100%);
+    z-index: 1;
+  }
+  .l4-hero-inner { position: relative; z-index: 2; padding: 0 40px; max-width: 1000px; }
+  .l4-hero .label {
+    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: rgba(255,255,255,0.8); margin-bottom: 24px;
+  }
+  .l4-hero h1 {
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 1.02; font-weight: 400;
+    margin-bottom: 32px;
+    letter-spacing: -0.02em;
+  }
+  .l4-hero h1 em { font-style: italic; color: #ffd166; font-weight: 400; }
+  .l4-hero p { font-size: clamp(16px, 1.4vw, 19px); color: rgba(255,255,255,0.85); max-width: 56ch; margin: 0 auto 32px; }
+  .l4-hero .cta {
+    display: inline-block;
+    background: #fff; color: #0a0908;
+    padding: 14px 32px; border-radius: 999px;
+    font-size: 14px; font-weight: 500; text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .l4-scroll {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.6);
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .l4-scroll::after { content: ''; width: 1px; height: 28px; background: rgba(255,255,255,0.4); animation: l4-pulse 2s ease infinite; }
+  @keyframes l4-pulse { 0%, 100% { transform: scaleY(0.5); transform-origin: top; } 50% { transform: scaleY(1); } }
+
+  /* Asymmetric content blocks */
+  .l4-craft {
+    padding: 140px 40px;
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 5fr 4fr; gap: 80px;
+    align-items: center;
+  }
+  .l4-craft .l4-text .num {
+    font-family: var(--font-display); font-size: 13px;
+    color: rgba(255,255,255,0.5); letter-spacing: 0.1em; margin-bottom: 16px;
+  }
+  .l4-craft h2 { font-size: clamp(36px, 4.4vw, 60px); line-height: 1.05; max-width: 18ch; margin-bottom: 24px; font-weight: 400; }
+  .l4-craft p { color: rgba(245,241,234,0.7); font-size: 16px; line-height: 1.7; margin: 0 0 16px; max-width: 50ch; }
+  .l4-craft .wf-img { aspect-ratio: 3/4; }
+
+  /* Services as inline editorial list, not card grid */
+  .l4-services {
+    padding: 100px 40px 140px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .l4-services .head {
+    display: grid; grid-template-columns: 1fr 2fr; gap: 80px; margin-bottom: 56px;
+    align-items: end;
+  }
+  .l4-services .head .num { font-family: var(--font-display); font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 0.1em; }
+  .l4-services .head h2 { font-size: clamp(36px, 4.4vw, 60px); line-height: 1.05; font-weight: 400; }
+  .l4-svc-list { display: flex; flex-direction: column; }
+  .l4-svc-row {
+    display: grid; grid-template-columns: 80px 1fr 200px auto;
+    gap: 24px; align-items: center;
+    padding: 28px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    transition: padding 250ms var(--ease);
+    cursor: pointer;
+  }
+  .l4-svc-row:last-child { border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .l4-svc-row:hover { padding-left: 16px; }
+  .l4-svc-row .thumb { width: 80px; height: 60px; }
+  .l4-svc-row h3 { font-size: 24px; line-height: 1.1; font-weight: 500; }
+  .l4-svc-row .desc { color: rgba(245,241,234,0.55); font-size: 14px; }
+  .l4-svc-row .px { font-family: var(--font-display); font-size: 22px; font-variant-numeric: tabular-nums; text-align: right; }
+  .l4-svc-row .arr { width: 32px; text-align: right; color: rgba(255,255,255,0.4); font-size: 18px; transition: color 200ms ease, transform 200ms ease; }
+  .l4-svc-row:hover .arr { color: #ffd166; transform: translateX(4px); }
+
+  /* Stories — editorial testimonials */
+  .l4-stories {
+    background: #f5f1ea;
+    color: #0a0908;
+    padding: 140px 40px;
+  }
+  .l4-stories h2, .l4-stories h3 { color: #0a0908; }
+  .l4-stories-inner {
+    max-width: 1300px; margin: 0 auto;
+    display: grid; grid-template-columns: 3fr 5fr; gap: 80px;
+  }
+  .l4-stories .head .num { font-family: var(--font-display); font-size: 13px; color: rgba(10,9,8,0.55); letter-spacing: 0.1em; margin-bottom: 16px; }
+  .l4-stories .head h2 { font-size: clamp(36px, 4.4vw, 56px); line-height: 1.05; font-weight: 400; max-width: 14ch; }
+  .l4-story-list { display: flex; flex-direction: column; gap: 56px; }
+  .l4-story { display: grid; grid-template-columns: 1fr 2fr; gap: 32px; align-items: start; }
+  .l4-story .wf-img { aspect-ratio: 1/1; }
+  .l4-story blockquote {
+    font-family: var(--font-display);
+    font-size: clamp(18px, 1.6vw, 22px);
+    line-height: 1.45;
+    margin: 0 0 16px;
+    color: #0a0908;
+  }
+  .l4-story cite { font-size: 13px; color: rgba(10,9,8,0.6); font-style: normal; letter-spacing: 0.04em; }
+
+  /* Final CTA */
+  .l4-final {
+    padding: 160px 40px;
+    text-align: center;
+    max-width: 900px; margin: 0 auto;
+  }
+  .l4-final h2 { font-size: clamp(40px, 5.6vw, 80px); line-height: 1.02; margin-bottom: 32px; font-weight: 400; }
+  .l4-final h2 em { font-style: italic; color: #ffd166; }
+  .l4-final .cta {
+    display: inline-block;
+    border: 1px solid rgba(245,241,234,0.6);
+    padding: 16px 36px; border-radius: 999px;
+    font-size: 14px; letter-spacing: 0.04em; font-weight: 500;
+    color: #f5f1ea; text-decoration: none;
+    transition: all 200ms var(--ease);
+  }
+  .l4-final .cta:hover { background: #f5f1ea; color: #0a0908; }
+
+  .l4-foot {
+    padding: 32px 40px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    color: rgba(245,241,234,0.4);
+    font-size: 13px;
+    display: flex; justify-content: space-between;
+  }
+
+  @media (max-width: 900px) {
+    .l4-nav nav { display: none; }
+    .l4-craft, .l4-services .head, .l4-stories-inner, .l4-story { grid-template-columns: 1fr; gap: 32px; }
+    .l4-svc-row { grid-template-columns: 60px 1fr; gap: 16px; padding: 20px 0; }
+    .l4-svc-row .thumb { width: 60px; height: 48px; }
+    .l4-svc-row .px, .l4-svc-row .arr { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lens-tag">Lens 4 · Creative / Immersive <b>· Phase A wireframe</b></div>
+
+<header class="l4-nav">
+  <div class="brand">Brightside</div>
+  <nav><a href="#">Craft</a><a href="#">Services</a><a href="#">Stories</a><a href="#">Visit</a></nav>
+  <a class="cta" href="#">Book</a>
+</header>
+
+<section class="l4-hero">
+  <div class="wf-img" data-label="Full-bleed hero · 2560×1440"></div>
+  <div class="l4-hero-inner">
+    <div class="label">Bristol · est. 2017</div>
+    <h1>Slower mornings for <em>nervous dogs.</em></h1>
+    <p>One groomer, one chair, no kennels. Brightside is a Cotham Hill salon built around the dogs who hate the dryer.</p>
+    <a class="cta" href="#">Visit the salon →</a>
+  </div>
+  <div class="l4-scroll">Scroll</div>
+</section>
+
+<section class="l4-craft">
+  <div class="l4-text">
+    <div class="num">01 — Our craft</div>
+    <h2>Quietest salon you've ever stood in.</h2>
+    <p>Brightside was built around a simple constraint: one dog in the room at a time. No background howling, no waiting in a crate, no shouted conversations. Just you, your dog, and Em — for as long as the appointment needs.</p>
+    <p>It's a slower way to groom. Most dogs who've been turned away elsewhere settle within ten minutes.</p>
+  </div>
+  <div class="wf-img" data-label="Anchor image · 800×1000"></div>
+</section>
+
+<section class="l4-services">
+  <div class="head">
+    <div class="num">02 — Services</div>
+    <h2>Five routines for five kinds of coat.</h2>
+  </div>
+  <div class="l4-svc-list">
+    <div class="l4-svc-row">
+      <div class="wf-img thumb" data-label=""></div>
+      <div><h3>Full groom · small</h3><div class="desc">Bath, hand-dry, scissor finish, nails</div></div>
+      <div class="px">from £52</div>
+      <div class="arr">→</div>
+    </div>
+    <div class="l4-svc-row">
+      <div class="wf-img thumb" data-label=""></div>
+      <div><h3>Full groom · medium</h3><div class="desc">Cockapoos, spaniels, retrievers under 25kg</div></div>
+      <div class="px">from £68</div>
+      <div class="arr">→</div>
+    </div>
+    <div class="l4-svc-row">
+      <div class="wf-img thumb" data-label=""></div>
+      <div><h3>Full groom · large</h3><div class="desc">Doodles, setters, doubles · full blow-out</div></div>
+      <div class="px">from £84</div>
+      <div class="arr">→</div>
+    </div>
+    <div class="l4-svc-row">
+      <div class="wf-img thumb" data-label=""></div>
+      <div><h3>Puppy first groom</h3><div class="desc">Gentle 45-min intro for pups 12–20 weeks</div></div>
+      <div class="px">£38</div>
+      <div class="arr">→</div>
+    </div>
+    <div class="l4-svc-row">
+      <div class="wf-img thumb" data-label=""></div>
+      <div><h3>Bath &amp; tidy</h3><div class="desc">Between-groom freshen-up · 40 min</div></div>
+      <div class="px">£32</div>
+      <div class="arr">→</div>
+    </div>
+  </div>
+</section>
+
+<section class="l4-stories">
+  <div class="l4-stories-inner">
+    <div class="head">
+      <div class="num">03 — Stories</div>
+      <h2>From the people whose dogs come back relaxed.</h2>
+    </div>
+    <div class="l4-story-list">
+      <div class="l4-story">
+        <div class="wf-img" data-label="Story photo · 600×600"></div>
+        <div>
+          <blockquote>"Milo had been turned away from three groomers before Em. He's a different dog now — comes back tired, not shaking. Worth every penny."</blockquote>
+          <cite>SARAH THOMPSON · Cockapoo · Clifton</cite>
+        </div>
+      </div>
+      <div class="l4-story">
+        <div class="wf-img" data-label="Story photo · 600×600"></div>
+        <div>
+          <blockquote>"It's the quietest salon I've ever been in. Our anxious rescue actually went to sleep on the table. I genuinely cried."</blockquote>
+          <cite>JAMES MITCHELL · Lurcher · Redland</cite>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="l4-final">
+  <h2>The diary is open for <em>May &amp; June.</em></h2>
+  <a class="cta" href="#">Reserve a slot</a>
+</section>
+
+<footer class="l4-foot">
+  <div>Brightside · Cotham Hill, Bristol</div>
+  <div>+44 117 987 6543 · hello@brightside.co</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<!-- ─────────────────────────────────────────────────────────
+     TEMPLATE A · ITEM DETAIL · routed page
+     Inheriting from: Lens 9 · Directory / Listings
+     Fixture: Hartcliffe & Crew Estate Agents · Bristol
+     URL pattern: /listings/{slug} → /listings/15-redcliffe-parade-bs1
+     Same component code as Lens 9 — only tokens differ between hosts.
+     ───────────────────────────────────────────────────────── -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>15 Redcliffe Parade · For sale · £685,000 · Hartcliffe &amp; Crew</title>
+<style>
+:root {
+  /* Inherited from Lens 9 host (Hartcliffe & Crew) */
+  --hc-ink:        #16243a;
+  --hc-navy:       #1e3050;
+  --hc-navy-700:   #0f1f3a;
+  --hc-cream:      #f6f1e6;
+  --hc-paper:      #fbf8f1;
+  --hc-sand:       #e8dfc9;
+  --hc-sage:       #5e7a64;
+  --hc-rust:       #b85b3e;
+  --hc-mid:        #6c7886;
+  --hc-mist:       #e1e4ea;
+
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-body:    'Inter', -apple-system, system-ui, sans-serif;
+
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+  --s-9: 96px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #fff; color: var(--hc-ink); font-family: var(--font-body); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+h1,h2,h3,h4 { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.02em; }
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+.wf-img {
+  background: repeating-linear-gradient(45deg, var(--hc-sand) 0 10px, var(--hc-paper) 10px 20px);
+  border: 1px solid rgba(22,36,58,0.08);
+  position: relative;
+}
+.wf-img::after {
+  content: attr(data-label);
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--hc-mid); font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+
+.tpl-tag {
+  position: fixed; left: 16px; top: 16px; z-index: 200;
+  background: var(--hc-ink); color: #fff;
+  padding: 6px 12px; border-radius: 4px;
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
+}
+.tpl-tag b { color: #ffd166; }
+
+/* ─────────────── NAV (inherited from Lens 9) ─────────────── */
+.l9-util {
+  background: var(--hc-navy); color: rgba(255,255,255,0.85);
+  padding: 9px 32px; display: flex; justify-content: space-between; font-size: 12.5px;
+}
+.l9-util b { color: #fff; }
+.l9-nav {
+  background: var(--hc-paper);
+  padding: 20px 32px;
+  display: grid; grid-template-columns: 240px 1fr auto;
+  align-items: center;
+  border-bottom: 1px solid rgba(22,36,58,0.08);
+  position: sticky; top: 0; z-index: 50;
+}
+.l9-nav .brand { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
+.l9-nav .brand small { display: block; font-size: 9.5px; letter-spacing: 0.3em; color: var(--hc-mid); font-family: var(--font-body); font-weight: 600; }
+.l9-nav nav { display: flex; justify-content: center; gap: 32px; font-size: 14px; font-weight: 500; }
+.l9-nav nav a { color: var(--hc-ink); text-decoration: none; opacity: 0.78; }
+.l9-nav nav a:hover { opacity: 1; color: var(--hc-rust); }
+.l9-nav .right { display: flex; gap: 14px; align-items: center; font-size: 13px; }
+.l9-nav .right .login { color: var(--hc-ink); text-decoration: none; opacity: 0.7; }
+.l9-nav .cta { background: var(--hc-navy); color: var(--hc-cream); padding: 11px 20px; font-size: 12.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; }
+
+/* ─────────────── BREADCRUMB ─────────────── */
+.crumb {
+  padding: 14px 32px; font-size: 12.5px; color: var(--hc-mid);
+  background: var(--hc-paper); border-bottom: 1px solid rgba(22,36,58,0.08);
+  display: flex; gap: 8px; align-items: center;
+  max-width: 1440px; margin: 0 auto;
+}
+.crumb a { color: var(--hc-mid); text-decoration: none; }
+.crumb a:hover { color: var(--hc-rust); }
+.crumb b { color: var(--hc-ink); font-weight: 500; }
+.crumb .sep { opacity: 0.4; }
+.crumb .actions { margin-left: auto; display: flex; gap: 14px; font-size: 12px; }
+.crumb .actions a { font-weight: 600; }
+.crumb .actions a::before { content: "·"; margin-right: 6px; opacity: 0.4; }
+.crumb .actions a:first-child::before { display: none; }
+
+/* ─────────────── HERO GALLERY ─────────────── */
+.t1-hero {
+  max-width: 1440px; margin: 24px auto 0; padding: 0 32px;
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr; grid-template-rows: 1fr 1fr;
+  gap: 8px; height: 520px;
+}
+.t1-hero .big { grid-row: 1 / 3; grid-column: 1; position: relative; }
+.t1-hero .wf-img { width: 100%; height: 100%; }
+.t1-hero .photo-meta {
+  position: absolute; bottom: 14px; left: 14px;
+  background: rgba(22,36,58,0.85); color: #fff; backdrop-filter: blur(4px);
+  padding: 8px 14px; font-size: 12px; letter-spacing: 0.06em;
+  font-weight: 500; display: flex; gap: 8px; align-items: center;
+}
+.t1-hero .photo-meta b { font-weight: 700; }
+.t1-hero .photo-meta .tour { background: var(--hc-rust); margin-left: 8px; padding: 4px 10px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+
+.t1-hero .pill-row {
+  position: absolute; top: 14px; left: 14px;
+  display: flex; gap: 8px;
+}
+.t1-hero .tag {
+  background: var(--hc-rust); color: #fff;
+  padding: 5px 11px; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+}
+.t1-hero .tag.epc { background: var(--hc-sage); }
+
+.t1-hero .actions-tl {
+  position: absolute; top: 14px; right: 14px;
+  display: flex; gap: 8px;
+}
+.t1-hero .actions-tl button {
+  background: rgba(255,255,255,0.95); border: none;
+  width: 36px; height: 36px; border-radius: 99px;
+  font-size: 16px; color: var(--hc-ink); cursor: pointer;
+}
+.t1-hero .actions-tl button.save { color: var(--hc-rust); }
+
+.t1-hero .view-all {
+  position: absolute; bottom: 14px; right: 14px;
+  background: rgba(255,255,255,0.95); color: var(--hc-ink);
+  padding: 9px 16px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  border: none; cursor: pointer;
+}
+
+/* ─────────────── HEADER STRIP ─────────────── */
+.t1-head {
+  max-width: 1440px; margin: 24px auto 0; padding: 0 32px;
+  display: grid; grid-template-columns: 1fr 360px; gap: 48px; align-items: end;
+}
+.t1-head h1 { font-size: 44px; line-height: 1.05; color: var(--hc-navy); margin-bottom: 8px; }
+.t1-head .addr { font-size: 16px; color: var(--hc-mid); display: flex; gap: 10px; align-items: center; }
+.t1-head .addr b { color: var(--hc-ink); font-weight: 500; }
+.t1-head .addr .pin::before { content: "📍 "; }
+.t1-head .price {
+  font-family: var(--font-display); font-size: 44px; font-weight: 500;
+  color: var(--hc-navy); letter-spacing: -0.02em; line-height: 1; text-align: right;
+}
+.t1-head .price small { display: block; font-family: var(--font-body); font-size: 12.5px; color: var(--hc-mid); font-weight: 500; letter-spacing: 0.04em; margin-top: 6px; }
+
+/* ─────────────── FACTS STRIP ─────────────── */
+.t1-facts {
+  max-width: 1440px; margin: 32px auto; padding: 0 32px;
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 0;
+  border-top: 1px solid rgba(22,36,58,0.08);
+  border-bottom: 1px solid rgba(22,36,58,0.08);
+}
+.t1-fact { padding: 20px 16px; border-right: 1px solid rgba(22,36,58,0.08); }
+.t1-fact:last-child { border-right: none; }
+.t1-fact small { display: block; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--hc-mid); font-weight: 700; margin-bottom: 6px; }
+.t1-fact b { font-family: var(--font-display); font-size: 24px; font-weight: 500; color: var(--hc-navy); display: block; line-height: 1; }
+.t1-fact .sub { font-size: 11.5px; color: var(--hc-mid); margin-top: 4px; }
+
+/* ─────────────── BODY ─────────────── */
+.t1-body {
+  max-width: 1440px; margin: 0 auto; padding: 32px 32px 96px;
+  display: grid; grid-template-columns: 1fr 380px; gap: 56px;
+}
+
+.t1-main h2 { font-size: 32px; color: var(--hc-navy); margin-bottom: 18px; letter-spacing: -0.02em; }
+.t1-main h2 + .lede { font-size: 17px; line-height: 1.7; color: var(--hc-ink); margin-bottom: 18px; font-weight: 400; }
+.t1-main p { font-size: 15px; line-height: 1.75; color: var(--hc-ink); margin-bottom: 18px; max-width: 70ch; }
+.t1-main p strong { color: var(--hc-navy); font-weight: 600; }
+
+.t1-section { margin-bottom: 56px; }
+.t1-section .eyebrow {
+  font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--hc-rust); font-weight: 700; margin-bottom: 14px;
+}
+
+/* Features list */
+.t1-features { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 18px 0 0; }
+.t1-features li {
+  list-style: none; font-size: 14.5px; padding: 14px 0;
+  border-bottom: 1px solid rgba(22,36,58,0.08);
+  display: flex; gap: 12px; align-items: center;
+}
+.t1-features li::before {
+  content: "✓"; width: 22px; height: 22px; flex-shrink: 0;
+  background: var(--hc-sage); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+
+/* Image grid */
+.t1-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+  margin-top: 18px;
+}
+.t1-grid .wf-img { aspect-ratio: 4/3; }
+.t1-grid .wide { grid-column: 1 / 3; }
+.t1-grid .wide .wf-img { aspect-ratio: 16/9; }
+
+/* Spec table */
+.t1-spec {
+  margin-top: 18px; border: 1px solid rgba(22,36,58,0.08); background: var(--hc-paper);
+}
+.t1-spec table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.t1-spec th, .t1-spec td { padding: 14px 18px; text-align: left; border-bottom: 1px solid rgba(22,36,58,0.06); vertical-align: top; }
+.t1-spec th { font-weight: 600; color: var(--hc-mid); width: 200px; font-size: 12.5px; letter-spacing: 0.04em; }
+.t1-spec td { color: var(--hc-ink); }
+.t1-spec tr:last-child th, .t1-spec tr:last-child td { border-bottom: none; }
+
+/* EPC band */
+.t1-epc { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px; background: var(--hc-paper); border: 1px solid rgba(22,36,58,0.08); }
+.t1-epc-bands { display: grid; gap: 2px; }
+.t1-epc-bands .band {
+  height: 26px; display: flex; justify-content: space-between; align-items: center;
+  padding: 0 12px; font-size: 12.5px; font-weight: 700; color: #fff;
+}
+.t1-epc-bands .b-a { background: #3da45b; width: 100%; }
+.t1-epc-bands .b-b { background: #5cb653; width: 92%; }
+.t1-epc-bands .b-c { background: #c5d63f; color: #1a1a1a; width: 84%; }
+.t1-epc-bands .b-d { background: #fac84a; color: #1a1a1a; width: 76%; }
+.t1-epc-bands .b-e { background: #f29030; width: 68%; }
+.t1-epc-bands .b-f { background: #e3522e; width: 60%; }
+.t1-epc-bands .b-g { background: #c52f2f; width: 52%; }
+.t1-epc-bands .band.current { outline: 3px solid var(--hc-ink); outline-offset: 2px; }
+.t1-epc-bands .band b small { font-weight: 500; opacity: 0.85; margin-left: 4px; }
+.t1-epc h4 { font-size: 18px; margin-bottom: 6px; color: var(--hc-navy); }
+.t1-epc .copy small { display: block; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--hc-mid); font-weight: 700; margin-bottom: 10px; }
+.t1-epc .copy p { font-size: 13.5px; line-height: 1.6; color: var(--hc-ink); margin-bottom: 10px; }
+.t1-epc .copy .meta { font-size: 11.5px; color: var(--hc-mid); }
+
+/* Floorplan */
+.t1-floor .wf-img { aspect-ratio: 4/3; }
+.t1-floor-meta { display: flex; gap: 14px; margin-top: 12px; font-size: 12.5px; color: var(--hc-mid); }
+.t1-floor-meta a { color: var(--hc-rust); font-weight: 700; text-decoration: none; }
+.t1-floor-meta a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Map */
+.t1-map { position: relative; }
+.t1-map .wf-img { aspect-ratio: 16/9; }
+.t1-map .pins {
+  position: absolute; bottom: 14px; left: 14px; right: 14px;
+  background: rgba(255,255,255,0.95); padding: 10px 14px;
+  display: flex; gap: 18px; font-size: 12.5px;
+}
+.t1-map .pins span { display: flex; gap: 6px; align-items: center; }
+.t1-map .pins .dot { width: 8px; height: 8px; border-radius: 99px; }
+.t1-map .pins .d-school { background: #5cb653; }
+.t1-map .pins .d-station { background: #b85b3e; }
+.t1-map .pins .d-shops { background: #c89a5a; }
+.t1-map .pins .d-park { background: #5e7a64; }
+
+.t1-poi { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; margin-top: 14px; font-size: 13.5px; }
+.t1-poi .row { padding: 10px 0; border-bottom: 1px solid rgba(22,36,58,0.06); display: flex; justify-content: space-between; align-items: center; }
+.t1-poi .row b { font-weight: 500; }
+.t1-poi .row small { color: var(--hc-mid); font-size: 12px; }
+.t1-poi .row .dist { font-family: var(--font-display); font-size: 13.5px; font-weight: 500; }
+
+/* ─────────────── SIDEBAR · agent + actions ─────────────── */
+.t1-side { position: sticky; top: 96px; align-self: flex-start; display: flex; flex-direction: column; gap: 18px; }
+
+.t1-agent {
+  background: #fff; border: 1px solid rgba(22,36,58,0.1); padding: 24px;
+}
+.t1-agent .head { display: flex; gap: 14px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid rgba(22,36,58,0.08); }
+.t1-agent .av { width: 56px; height: 56px; border-radius: 99px; background: var(--hc-mist); border: 1px solid rgba(22,36,58,0.1); position: relative; overflow: hidden; }
+.t1-agent .av::after { content: "TG"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 600; font-size: 18px; color: var(--hc-navy); }
+.t1-agent .head b { font-weight: 600; font-size: 15px; display: block; }
+.t1-agent .head small { font-size: 12px; color: var(--hc-mid); }
+.t1-agent .head .stars { color: var(--hc-rust); font-size: 12px; letter-spacing: 2px; margin-top: 4px; display: inline-block; }
+.t1-agent .acts { display: grid; gap: 8px; margin-top: 18px; }
+.t1-agent .acts a, .t1-agent .acts button {
+  padding: 13px 16px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  text-decoration: none; text-align: center; border: 1px solid; cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.t1-agent .acts .a1 { background: var(--hc-navy); color: #fff; border-color: var(--hc-navy); }
+.t1-agent .acts .a2 { background: var(--hc-rust); color: #fff; border-color: var(--hc-rust); }
+.t1-agent .acts .a3 { background: #fff; color: var(--hc-navy); border-color: rgba(22,36,58,0.15); }
+.t1-agent .quick { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(22,36,58,0.08); font-size: 12.5px; color: var(--hc-mid); display: flex; flex-direction: column; gap: 6px; }
+.t1-agent .quick b { color: var(--hc-navy); font-weight: 600; }
+
+.t1-key {
+  background: var(--hc-paper); padding: 20px; border: 1px solid rgba(22,36,58,0.08);
+}
+.t1-key h4 { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--hc-mid); font-weight: 700; margin-bottom: 14px; font-family: var(--font-body); }
+.t1-key .row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13.5px; }
+.t1-key .row b { font-weight: 600; }
+.t1-key .row small { color: var(--hc-mid); }
+
+.t1-stamps { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.t1-stamp { padding: 14px 12px; border: 1px solid rgba(22,36,58,0.1); background: #fff; text-align: center; }
+.t1-stamp b { display: block; font-family: var(--font-display); font-size: 22px; color: var(--hc-navy); }
+.t1-stamp small { font-size: 11px; letter-spacing: 0.06em; color: var(--hc-mid); display: block; margin-top: 2px; }
+
+/* ─────────────── SIMILAR LISTINGS STRIP ─────────────── */
+.t1-similar { background: var(--hc-paper); padding: 80px 32px; border-top: 1px solid rgba(22,36,58,0.06); }
+.t1-similar-in { max-width: 1440px; margin: 0 auto; }
+.t1-similar .head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 36px; }
+.t1-similar .label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--hc-rust); font-weight: 700; margin-bottom: 10px; }
+.t1-similar h2 { font-size: 36px; color: var(--hc-navy); margin: 0; }
+.t1-similar .more { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--hc-rust); text-decoration: none; }
+
+.t1-similar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.l9-card { background: #fff; border: 1px solid rgba(22,36,58,0.08); cursor: pointer; overflow: hidden; }
+.l9-card:hover { box-shadow: 0 14px 28px rgba(22,36,58,0.1); }
+.l9-card .wf-img { aspect-ratio: 4/3; }
+.l9-card-body { padding: 16px 18px; }
+.l9-card .price { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--hc-navy); margin: 0 0 4px; line-height: 1; }
+.l9-card h4 { font-size: 15px; font-weight: 500; margin: 0 0 4px; letter-spacing: -0.01em; }
+.l9-card .addr { font-size: 12.5px; color: var(--hc-mid); margin-bottom: 12px; }
+.l9-card .attrs { display: flex; gap: 12px; padding-top: 12px; border-top: 1px solid rgba(22,36,58,0.08); font-size: 12px; }
+.l9-card .attrs b { font-family: var(--font-display); font-size: 13px; font-weight: 500; }
+
+/* ─────────────── STICKY CTA BAR ─────────────── */
+.t1-sticky {
+  position: sticky; bottom: 0; z-index: 40;
+  background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(22,36,58,0.1);
+  padding: 14px 32px;
+  display: none;  /* visible only after scroll past header on mobile, left visible here for spec */
+}
+@media (max-width: 720px) {
+  .t1-sticky { display: flex; }
+  .t1-body { grid-template-columns: 1fr; }
+  .t1-side { position: static; }
+  .t1-hero { grid-template-columns: 1fr; grid-template-rows: 1fr; height: 240px; }
+  .t1-hero .big { grid-row: 1; grid-column: 1; }
+  .t1-hero .wf-img:not(.big-img) { display: none; }
+}
+
+/* ─────────────── FOOTER (inherited from L9) ─────────────── */
+.l9-foot { background: var(--hc-navy-700); color: rgba(255,255,255,0.7); padding: 72px 80px 32px; }
+.l9-foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); max-width: 1440px; margin: 0 auto; }
+.l9-foot .brand { font-family: var(--font-display); font-size: 26px; color: #fff; font-weight: 600; letter-spacing: -0.02em; }
+.l9-foot .brand small { display: block; font-size: 9.5px; letter-spacing: 0.3em; color: rgba(255,255,255,0.5); font-family: var(--font-body); font-weight: 600; }
+.l9-foot .blurb { margin-top: 18px; font-size: 14px; line-height: 1.65; max-width: 38ch; }
+.l9-foot h5 { font-family: var(--font-body); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); font-weight: 700; margin: 0 0 18px; }
+.l9-foot ul { list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.l9-foot ul a { color: rgba(255,255,255,0.85); text-decoration: none; }
+.l9-foot .legal { padding-top: 24px; display: flex; justify-content: space-between; font-size: 11.5px; color: rgba(255,255,255,0.4); max-width: 1440px; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<div class="tpl-tag">Template A · <b>Item detail</b> · Lens 9 inheritance · /listings/15-redcliffe-parade-bs1</div>
+
+<!-- ═══════ UTILITY + NAV (inherited from Lens 9) ═══════ -->
+<div class="l9-util">
+  <div>📞 <b>0117 911 0214</b>  ·  Mon–Sat  ·  Bristol &amp; North Somerset</div>
+  <div>★ <b>4.9</b> on Google · 612 reviews</div>
+</div>
+<header class="l9-nav">
+  <div class="brand">Hartcliffe &amp; Crew<small>EST. 1962 · BRISTOL</small></div>
+  <nav>
+    <a href="#">For sale</a>
+    <a href="#">To rent</a>
+    <a href="#">Commercial</a>
+    <a href="#">Valuations</a>
+    <a href="#">Area guides</a>
+    <a href="#">About us</a>
+  </nav>
+  <div class="right">
+    <a class="login" href="#">Sign in</a>
+    <a class="cta" href="#">Book valuation</a>
+  </div>
+</header>
+
+<!-- ═══════ BREADCRUMB ═══════ -->
+<div class="crumb">
+  <a href="/">Home</a>
+  <span class="sep">/</span>
+  <a href="/for-sale">For sale</a>
+  <span class="sep">/</span>
+  <a href="/redcliffe">Redcliffe</a>
+  <span class="sep">/</span>
+  <b>15 Redcliffe Parade</b>
+  <div class="actions">
+    <a href="#">← Back to search (12 of 247)</a>
+    <a href="#">Save</a>
+    <a href="#">Share</a>
+    <a href="#">Print</a>
+  </div>
+</div>
+
+<!-- ═══════ HERO GALLERY ═══════ -->
+<section class="t1-hero">
+  <div class="big">
+    <div class="wf-img big-img" data-label="Hero photo · facade at golden hour"></div>
+    <div class="pill-row">
+      <span class="tag">New · 2 days</span>
+      <span class="tag epc">EPC C</span>
+    </div>
+    <div class="actions-tl">
+      <button title="Save" class="save">♥</button>
+      <button title="Share">↗</button>
+      <button title="Print">⎙</button>
+    </div>
+    <div class="photo-meta">
+      Photo <b>1</b> of 32 <span class="tour">3D tour</span>
+    </div>
+  </div>
+  <div class="wf-img" data-label="Living room"></div>
+  <div class="wf-img" data-label="Kitchen — Plain English"></div>
+  <div class="wf-img" data-label="Master bedroom"></div>
+  <div style="position: relative;">
+    <div class="wf-img" style="height:100%;" data-label="Garden — west-facing"></div>
+    <button class="view-all">View all 32 photos →</button>
+  </div>
+</section>
+
+<!-- ═══════ HEADER STRIP ═══════ -->
+<div class="t1-head">
+  <div>
+    <h1>15 Redcliffe Parade East</h1>
+    <div class="addr"><span class="pin"></span><b>Redcliffe, Bristol BS1 6SP</b> · Mid-terrace Georgian · 4 bed · 2 reception</div>
+  </div>
+  <div class="price">
+    £685,000
+    <small>Guide price · Freehold · No onward chain</small>
+  </div>
+</div>
+
+<!-- ═══════ FACTS STRIP ═══════ -->
+<div class="t1-facts">
+  <div class="t1-fact"><small>Bedrooms</small><b>4</b><div class="sub">3 doubles · 1 single</div></div>
+  <div class="t1-fact"><small>Bathrooms</small><b>2</b><div class="sub">1 ensuite · 1 family</div></div>
+  <div class="t1-fact"><small>Reception</small><b>2</b><div class="sub">+ kitchen-diner</div></div>
+  <div class="t1-fact"><small>Floor area</small><b>1,684<small style="font-size:14px;font-weight:500;"> ft²</small></b><div class="sub">156 m² · across 3 floors</div></div>
+  <div class="t1-fact"><small>EPC rating</small><b style="color:#5cb653;">C · 72</b><div class="sub">Potential B · 84</div></div>
+  <div class="t1-fact"><small>Council tax</small><b>Band E</b><div class="sub">£2,841 · Bristol</div></div>
+</div>
+
+<!-- ═══════ BODY ═══════ -->
+<div class="t1-body">
+
+  <!-- MAIN -->
+  <main class="t1-main">
+
+    <section class="t1-section">
+      <div class="eyebrow">The home</div>
+      <h2>A Georgian terrace on Redcliffe's<br>most-loved Sunday-walking street.</h2>
+      <p class="lede"><strong>This is the first time number 15 has come to market in 41 years.</strong> The current owners — a sculptor and a barrister — bought it shortly after the 1981 floods drained, and have looked after it with the kind of patience that's now almost impossible to buy. The result is a four-bedroom Georgian that feels like a home, not a project.</p>
+
+      <p>The house is one of fourteen on the original 1768 parade, set back from the harbour by a private green and a row of pollarded limes. Most of these houses have been chopped into flats. <strong>15 hasn't.</strong> You walk in to a single hallway with the original flagstone floor (the owners had the lime-mortar repointed in 2014 by Drew Mahoney's lot — receipts and conservation officer's sign-off in the legal pack), turn right into the front reception, and immediately understand why nobody wants to leave.</p>
+
+      <p>The kitchen at the back was rebuilt in 2019 by Plain English — solid English oak, brass tap, Aga in deep teal. It opens to a 38-foot west-facing garden, walled in original red brick, with a workshop at the bottom that's currently a pottery but would make a perfect office or studio. Light pours in from the south side from late morning until sunset.</p>
+
+      <p>Upstairs you get four bedrooms across two floors, the master with a recently-fitted ensuite (Lefroy Brooks fittings, Carrara tile). The original sash windows have all been refurbished, weighted, and draught-stripped — they slide silently and you don't hear the city. The wide-plank pine floors are original to the build; they were lifted, cleaned, and re-laid in 2017.</p>
+
+      <p>It's listed Grade II. You don't notice — and that, in our view, is the highest possible compliment to the owners.</p>
+    </section>
+
+    <section class="t1-section">
+      <div class="eyebrow">What you'll love</div>
+      <h2>Features</h2>
+      <ul class="t1-features">
+        <li>Original 1768 fabric — flagstone hallway, wide-plank pine floors, six-over-six sashes</li>
+        <li>Plain English kitchen (2019) with Aga, Belfast sink, soapstone worktops</li>
+        <li>South-facing 38-foot walled garden with detached studio</li>
+        <li>Two reception rooms — one front (formal), one rear (family-sized)</li>
+        <li>Lefroy Brooks ensuite to master bedroom (2021)</li>
+        <li>Original cast-iron range, working, in the back reception</li>
+        <li>Cellar — currently wine store, dry, 8'2" head height</li>
+        <li>Period sash windows refurbished and draught-sealed (2018)</li>
+        <li>Lime-pointed brickwork by conservation specialists (2014)</li>
+        <li>Mains gas central heating · combi boiler (2022) · 7-year warranty remaining</li>
+        <li>Within 8 min walk of Bristol Temple Meads · 12 min to Cabot Circus</li>
+        <li>Catchment for Redcliffe Primary (Ofsted Outstanding) &amp; St Mary Redcliffe CofE</li>
+      </ul>
+    </section>
+
+    <section class="t1-section">
+      <div class="eyebrow">Inside</div>
+      <h2>Further photos</h2>
+      <div class="t1-grid">
+        <div class="wide"><div class="wf-img" data-label="Rear reception · cast-iron range"></div></div>
+        <div class="wf-img" data-label="Master bedroom"></div>
+        <div class="wf-img" data-label="Ensuite — Lefroy Brooks"></div>
+        <div class="wf-img" data-label="Family bathroom"></div>
+        <div class="wf-img" data-label="Garden — looking back to house"></div>
+        <div class="wf-img" data-label="Studio at end of garden"></div>
+        <div class="wf-img" data-label="Cellar / wine store"></div>
+      </div>
+    </section>
+
+    <section class="t1-section">
+      <div class="eyebrow">Floorplan &amp; spec</div>
+      <h2>Layout</h2>
+      <div class="t1-floor"><div class="wf-img" data-label="Floorplan · ground · first · second"></div></div>
+      <div class="t1-floor-meta">
+        <span>Total: <b style="color: var(--hc-ink); font-weight: 600;">156 m² / 1,684 ft²</b></span>
+        <span>·</span>
+        <span>Ceiling heights: ground 2.74 m / first 2.62 m / second 2.41 m</span>
+        <span>·</span>
+        <a href="#">Download PDF →</a>
+      </div>
+
+      <div class="t1-spec">
+        <table>
+          <tbody>
+            <tr><th>Tenure</th><td>Freehold</td></tr>
+            <tr><th>Property type</th><td>Mid-terrace · Grade II listed · built c. 1768</td></tr>
+            <tr><th>Council tax</th><td>Band E · £2,841/year · Bristol City</td></tr>
+            <tr><th>Heating</th><td>Mains gas · combi boiler installed 2022 (Worcester Bosch · 7-year warranty)</td></tr>
+            <tr><th>Broadband</th><td>Ultrafast available · Openreach FTTP · max ~1,000 Mbps download</td></tr>
+            <tr><th>Mobile signal</th><td>EE / Vodafone — likely · O2 / Three — limited (Ofcom checker)</td></tr>
+            <tr><th>Parking</th><td>Residents' permit zone E · waiting list ~6 weeks · Trenchard Street car park 4 min walk</td></tr>
+            <tr><th>Flood risk</th><td>Very low — surface water and rivers (Environment Agency, May 2026)</td></tr>
+            <tr><th>Listing reference</th><td>HC-2526-RED-015 · added 11 May 2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="t1-section">
+      <div class="eyebrow">Running costs</div>
+      <h2>Energy</h2>
+      <div class="t1-epc">
+        <div class="t1-epc-bands">
+          <div class="band b-a"><b>A <small>92+</small></b><span>Most efficient</span></div>
+          <div class="band b-b"><b>B <small>81–91</small></b><span>Potential · 84</span></div>
+          <div class="band b-c current"><b>C <small>69–80</small></b><span>Current · 72</span></div>
+          <div class="band b-d"><b>D <small>55–68</small></b><span></span></div>
+          <div class="band b-e"><b>E <small>39–54</small></b><span></span></div>
+          <div class="band b-f"><b>F <small>21–38</small></b><span></span></div>
+          <div class="band b-g"><b>G <small>1–20</small></b><span>Least efficient</span></div>
+        </div>
+        <div class="copy">
+          <small>EPC summary</small>
+          <h4>Current C · 72 · Potential B · 84</h4>
+          <p>Loft insulation, low-energy lighting throughout, and the 2022 condensing boiler put this well above the Bristol terrace average (band D · 56). Estimated annual energy cost <b style="color: var(--hc-navy); font-weight: 600;">£1,720</b> based on standard occupancy.</p>
+          <p class="meta">Certificate valid until 14 March 2032 · reference 8740-7042-3220-5907-1903</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="t1-section">
+      <div class="eyebrow">The neighbourhood</div>
+      <h2>Redcliffe at a glance</h2>
+      <div class="t1-map">
+        <div class="wf-img" data-label="Map · Redcliffe with POIs"></div>
+        <div class="pins">
+          <span><span class="dot d-school"></span>Schools</span>
+          <span><span class="dot d-station"></span>Transport</span>
+          <span><span class="dot d-shops"></span>Shops &amp; food</span>
+          <span><span class="dot d-park"></span>Green space</span>
+        </div>
+      </div>
+      <div class="t1-poi">
+        <div class="row"><div><b>Bristol Temple Meads</b><br><small>Train station · 5 platforms</small></div><span class="dist">8 min</span></div>
+        <div class="row"><div><b>Redcliffe Primary</b><br><small>Ofsted Outstanding · 2024</small></div><span class="dist">4 min</span></div>
+        <div class="row"><div><b>Source Food Hall</b><br><small>Daily market · Saturday craft</small></div><span class="dist">6 min</span></div>
+        <div class="row"><div><b>St Mary Redcliffe</b><br><small>Grade I · graveyard walks</small></div><span class="dist">3 min</span></div>
+        <div class="row"><div><b>Queen Square</b><br><small>9-acre park · weekend market</small></div><span class="dist">9 min</span></div>
+        <div class="row"><div><b>Wapping Wharf restaurants</b><br><small>Box Hall · Pasta Loco · Smoke Haus</small></div><span class="dist">10 min</span></div>
+        <div class="row"><div><b>SS Great Britain</b><br><small>Brunel ship · Bristol icon</small></div><span class="dist">12 min</span></div>
+        <div class="row"><div><b>Clifton Suspension Bridge</b><br><small>Drive · bus 8 · bus 9</small></div><span class="dist">14 min</span></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="t1-side">
+
+    <div class="t1-agent">
+      <div class="head">
+        <div class="av"></div>
+        <div>
+          <b>Tessa Greenhow</b>
+          <small>Director · Redcliffe office</small>
+          <span class="stars">★★★★★ · 4.9 (84)</span>
+        </div>
+      </div>
+      <div class="acts">
+        <a class="a1" href="#">📅 Book a viewing</a>
+        <button class="a2">💬 Ask Tessa a question</button>
+        <a class="a3" href="tel:01179110214">📞 0117 911 0214</a>
+      </div>
+      <div class="quick">
+        <span><b>14</b> viewings booked this week</span>
+        <span><b>2 offers</b> already declined — owners holding for £680k+</span>
+        <span><b>Same-day reply</b> Mon–Sat before 6pm</span>
+      </div>
+    </div>
+
+    <div class="t1-key">
+      <h4>At a glance</h4>
+      <div class="row"><span>Guide price</span><b>£685,000</b></div>
+      <div class="row"><span>Stamp duty (no FTB)</span><b>£21,750</b></div>
+      <div class="row"><span>Est. monthly mortgage*</span><b>£2,840</b></div>
+      <div class="row"><span>Council tax</span><b>£237/m</b></div>
+      <div class="row"><span style="color: var(--hc-mid);">*5% deposit · 4.5% · 25 yr</span><a href="#" style="font-size:11px; color: var(--hc-rust);">Calculate</a></div>
+    </div>
+
+    <div class="t1-stamps">
+      <div class="t1-stamp"><b>32</b><small>Photos</small></div>
+      <div class="t1-stamp"><b>3D</b><small>Tour</small></div>
+      <div class="t1-stamp"><b>HD</b><small>Floorplan</small></div>
+      <div class="t1-stamp"><b>PDF</b><small>Brochure</small></div>
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- ═══════ SIMILAR LISTINGS ═══════ -->
+<section class="t1-similar">
+  <div class="t1-similar-in">
+    <div class="head">
+      <div>
+        <div class="label">More like this</div>
+        <h2>4-bed period homes in central Bristol</h2>
+      </div>
+      <a class="more" href="#">See all 18 →</a>
+    </div>
+    <div class="t1-similar-grid">
+
+      <a class="l9-card" href="#"><div class="wf-img" data-label="GEORGIAN TERRACE"></div>
+        <div class="l9-card-body">
+          <div class="price">£725,000</div>
+          <h4>42 Granby Hill</h4>
+          <div class="addr">Clifton · BS8</div>
+          <div class="attrs"><span><b>4</b> bed</span><span><b>2</b> bath</span><span><b>1,540</b> ft²</span></div>
+        </div></a>
+
+      <a class="l9-card" href="#"><div class="wf-img" data-label="VICTORIAN END"></div>
+        <div class="l9-card-body">
+          <div class="price">£599,000</div>
+          <h4>17 Brigstocke Road</h4>
+          <div class="addr">St Pauls · BS2</div>
+          <div class="attrs"><span><b>4</b> bed</span><span><b>2</b> bath</span><span><b>1,460</b> ft²</span></div>
+        </div></a>
+
+      <a class="l9-card" href="#"><div class="wf-img" data-label="GEORGIAN MEWS"></div>
+        <div class="l9-card-body">
+          <div class="price">£640,000</div>
+          <h4>3 Eldon Way Mews</h4>
+          <div class="addr">Hotwells · BS8</div>
+          <div class="attrs"><span><b>4</b> bed</span><span><b>2</b> bath</span><span><b>1,720</b> ft²</span></div>
+        </div></a>
+
+      <a class="l9-card" href="#"><div class="wf-img" data-label="WATERSIDE TOWNHOUSE"></div>
+        <div class="l9-card-body">
+          <div class="price">£710,000</div>
+          <h4>8 Wapping Quay</h4>
+          <div class="addr">Wapping Wharf · BS1</div>
+          <div class="attrs"><span><b>4</b> bed</span><span><b>3</b> bath</span><span><b>1,820</b> ft²</span></div>
+        </div></a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ STICKY CTA (mobile) ═══════ -->
+<div class="t1-sticky">
+  <div style="flex: 1; font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--hc-navy);">£685,000</div>
+  <a class="cta" style="background: var(--hc-rust); color: #fff; padding: 12px 20px; font-size: 12.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;" href="#">Book a viewing</a>
+</div>
+
+<!-- ═══════ FOOTER (inherited from L9) ═══════ -->
+<footer class="l9-foot">
+  <div class="l9-foot-grid">
+    <div>
+      <div class="brand">Hartcliffe &amp; Crew<small>EST. 1962 · BRISTOL</small></div>
+      <p class="blurb">62 years on the same street. Independent. Owned by the people who answer the phone. No portal-only deals, no fake offers, no asterisks.</p>
+    </div>
+    <div>
+      <h5>Buy &amp; rent</h5>
+      <ul>
+        <li><a href="#">For sale</a></li>
+        <li><a href="#">To rent</a></li>
+        <li><a href="#">Commercial</a></li>
+        <li><a href="#">New homes</a></li>
+        <li><a href="#">Auctions</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Areas we cover</h5>
+      <ul>
+        <li><a href="#">Clifton &amp; Hotwells</a></li>
+        <li><a href="#">Redcliffe &amp; Wapping</a></li>
+        <li><a href="#">Bedminster &amp; Southville</a></li>
+        <li><a href="#">Bishopston &amp; Redland</a></li>
+        <li><a href="#">North Somerset</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Working with us</h5>
+      <ul>
+        <li><a href="#">Book a valuation</a></li>
+        <li><a href="#">Sell with us</a></li>
+        <li><a href="#">Let with us</a></li>
+        <li><a href="#">Mortgage advice</a></li>
+        <li><a href="#">Career &amp; press</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="legal">
+    <span>© Hartcliffe &amp; Crew Ltd · Reg. England 00984221 · Member of The Property Ombudsman · ARLA Propertymark · CMP</span>
+    <span><a href="#" style="color: rgba(255,255,255,0.7); text-decoration: none;">Privacy</a> · <a href="#" style="color: rgba(255,255,255,0.7); text-decoration: none;">Cookies</a> · <a href="#" style="color: rgba(255,255,255,0.7); text-decoration: none;">Complaints</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

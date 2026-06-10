@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lens 2 · Showcase + Grid — Brightside</title>
+<style>
+/* —— Inlined from _shared/tokens.css for standalone use —— */
+/* Brightside fixture tokens — shared across lens comps.
+   Lens comps are wireframe-fidelity per Phase A scope. Visual polish is Phase B. */
+:root {
+  /* Foundation */
+  --f-white: #ffffff;
+  --f-wash:  #f7f5f1;
+  --f-pale:  #ebe7df;
+  --f-mid:   #8a8378;
+  --f-slate: #4a463f;
+  --f-dark:  #1c1a17;
+
+  /* Brightside brand */
+  --site-primary:    #0d7a70;   /* teal */
+  --site-primary-700:#085f57;
+  --site-cta:        #c2185b;   /* magenta */
+  --site-cta-700:    #99124a;
+
+  /* Module accent colours (for the dock — not lens chrome) */
+  --mod-voice:   #c2185b;
+  --mod-booking: #0d7a70;
+  --mod-reviews: #c2410c;
+  --mod-chatbot: #7c3aed;
+
+  /* Typography — Phase B Typography Mood Library will override these */
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-body:    'Inter', -apple-system, system-ui, sans-serif;
+
+  /* Spacing scale */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+  --s-9: 96px; --s-10: 128px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  color: var(--f-dark);
+  background: var(--f-white);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+/* Brightside content fixture is HARDCODED into each lens file —
+   this is wireframe-fidelity, not the production data-driven render. */
+
+/* Wireframe placeholder hatching */
+.wf-img {
+  background:
+    repeating-linear-gradient(45deg, var(--f-pale) 0 8px, var(--f-wash) 8px 16px);
+  border: 1px solid var(--f-pale);
+  position: relative;
+}
+.wf-img::after {
+  content: attr(data-label);
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--f-mid); font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* Banner showing the lens name + phase note */
+.lens-tag {
+  position: fixed; left: 16px; top: 16px; z-index: 200;
+  background: var(--f-dark); color: var(--f-white);
+  padding: 6px 12px; border-radius: 4px;
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 600;
+}
+.lens-tag b { color: #ffd166; font-weight: 600; }
+
+</style>
+<style>
+  /* Lens 2 specific structure */
+  .l2-nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--f-pale);
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .l2-nav .brand { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+  .l2-nav nav { display: flex; gap: 28px; font-size: 14px; color: var(--f-slate); }
+  .l2-nav .cta {
+    background: var(--site-cta); color: #fff;
+    padding: 8px 16px; border-radius: 4px;
+    font-size: 13.5px; font-weight: 600; text-decoration: none;
+  }
+
+  /* HERO — full-bleed cinematic, bottom-aligned text */
+  .l2-hero {
+    position: relative;
+    height: clamp(420px, 70vh, 640px);
+    width: 100%;
+    overflow: hidden;
+  }
+  .l2-hero .wf-img { position: absolute; inset: 0; }
+  .l2-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.55) 100%);
+    z-index: 1;
+  }
+  .l2-hero::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+    height: 6px; background: var(--site-primary); z-index: 2;
+  }
+  .l2-hero-inner {
+    position: relative; z-index: 3;
+    max-width: 1200px; margin: 0 auto;
+    padding: 0 32px 56px;
+    height: 100%;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    color: #fff;
+  }
+  .l2-hero h1 { font-size: clamp(36px, 5.4vw, 64px); line-height: 1.05; max-width: 14ch; margin-bottom: 16px; }
+  .l2-hero p { font-size: clamp(16px, 1.4vw, 19px); max-width: 50ch; opacity: 0.9; margin: 0 0 24px; }
+  .l2-hero .cta {
+    display: inline-block; align-self: flex-start;
+    background: var(--site-cta); color: #fff;
+    padding: 14px 28px; border-radius: 4px;
+    font-size: 15px; font-weight: 600; text-decoration: none;
+  }
+
+  /* GRID — the spine of the lens */
+  .l2-grid-section {
+    max-width: 1280px; margin: 0 auto;
+    padding: 96px 32px;
+  }
+  .l2-grid-head { margin-bottom: 48px; }
+  .l2-grid-head .eyebrow {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--site-primary); margin-bottom: 12px;
+  }
+  .l2-grid-head h2 { font-size: clamp(32px, 3.6vw, 48px); max-width: 18ch; }
+  .l2-grid {
+    display: grid; gap: 24px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .l2-card {
+    display: flex; flex-direction: column;
+    border: 1px solid var(--f-pale);
+    background: var(--f-white);
+    transition: transform 200ms var(--ease), box-shadow 200ms var(--ease);
+  }
+  .l2-card:hover { transform: translateY(-4px); box-shadow: 0 16px 32px rgba(0,0,0,0.08); }
+  .l2-card .wf-img { aspect-ratio: 4/3; }
+  .l2-card-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .l2-card h3 { font-size: 20px; }
+  .l2-card .meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 12.5px; color: var(--f-mid);
+    margin-top: auto; padding-top: 12px;
+    border-top: 1px solid var(--f-pale);
+  }
+  .l2-card .meta .px { color: var(--site-primary); font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .l2-card p { font-size: 14px; color: var(--f-slate); margin: 0; line-height: 1.5; }
+
+  /* GAP placeholder card */
+  .l2-card.is-gap {
+    border: 2px dashed var(--f-pale);
+    background: transparent;
+    align-items: center; justify-content: center;
+    padding: 32px;
+    text-align: center;
+    color: var(--f-mid);
+    transition: none;
+  }
+  .l2-card.is-gap:hover { transform: none; box-shadow: none; border-color: var(--site-primary); color: var(--site-primary); }
+  .l2-card.is-gap .icon {
+    width: 40px; height: 40px;
+    border-radius: 999px; border: 2px dashed currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 8px;
+  }
+  .l2-card.is-gap small { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+
+  /* About + testimonials band */
+  .l2-about {
+    background: var(--f-wash);
+    padding: 96px 32px;
+  }
+  .l2-about-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+    align-items: center;
+  }
+  .l2-about .wf-img { aspect-ratio: 4/5; }
+  .l2-about h2 { font-size: clamp(28px, 3vw, 40px); margin-bottom: 16px; max-width: 16ch; }
+  .l2-about p { color: var(--f-slate); font-size: 16px; margin: 0 0 12px; max-width: 50ch; }
+
+  .l2-testimonials {
+    padding: 96px 32px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .l2-testimonials h2 { font-size: clamp(28px, 3vw, 40px); text-align: center; margin-bottom: 48px; }
+  .l2-test-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .l2-test {
+    padding: 24px;
+    border: 1px solid var(--f-pale);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .l2-test .stars { color: var(--mod-reviews); font-size: 14px; }
+  .l2-test blockquote { margin: 0; font-size: 15px; color: var(--f-slate); line-height: 1.55; }
+  .l2-test cite { font-size: 13px; color: var(--f-mid); font-style: normal; }
+  .l2-test cite b { color: var(--f-dark); font-weight: 600; display: block; }
+
+  /* CTA bar */
+  .l2-cta {
+    background: var(--f-dark); color: #fff;
+    padding: 80px 32px;
+    text-align: center;
+  }
+  .l2-cta h2 { font-size: clamp(28px, 3.4vw, 44px); margin-bottom: 16px; }
+  .l2-cta p { font-size: 17px; opacity: 0.8; max-width: 50ch; margin: 0 auto 28px; }
+  .l2-cta .btn {
+    display: inline-block;
+    background: var(--site-cta); color: #fff;
+    padding: 14px 32px; border-radius: 4px;
+    font-size: 15px; font-weight: 600; text-decoration: none;
+  }
+
+  /* Footer */
+  .l2-foot {
+    padding: 32px;
+    background: #0c0a09; color: #94908a;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  @media (max-width: 900px) {
+    .l2-grid { grid-template-columns: repeat(2, 1fr); }
+    .l2-about-inner { grid-template-columns: 1fr; gap: 32px; }
+    .l2-test-row { grid-template-columns: 1fr; }
+    .l2-nav nav { display: none; }
+  }
+  @media (max-width: 560px) {
+    .l2-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lens-tag">Lens 2 · Showcase + Grid <b>· Phase A wireframe</b></div>
+
+<header class="l2-nav">
+  <div class="brand">Brightside</div>
+  <nav><a href="#">Services</a><a href="#">About</a><a href="#">Reviews</a><a href="#">Contact</a></nav>
+  <a class="cta" href="#">Book now</a>
+</header>
+
+<section class="l2-hero">
+  <div class="wf-img" data-label="Hero image · 1920×900"></div>
+  <div class="l2-hero-inner">
+    <h1>Grooming Bristol's good boys for nine years.</h1>
+    <p>Independent dog grooming on Cotham Hill. Walk-in trims, full grooms, anxious-rescue welcome.</p>
+    <a class="cta" href="#">See services & book</a>
+  </div>
+</section>
+
+<section class="l2-grid-section">
+  <div class="l2-grid-head">
+    <div class="eyebrow">Our services</div>
+    <h2>Six routines built around your dog's coat, age and temperament.</h2>
+  </div>
+  <div class="l2-grid">
+    <div class="l2-card">
+      <div class="wf-img" data-label="Service photo · 800×600"></div>
+      <div class="l2-card-body">
+        <h3>Full groom · small</h3>
+        <p>Bath, hand-dry, scissor finish, nails. Best for terriers and toys.</p>
+        <div class="meta"><span>60 min</span><span class="px">from £52</span></div>
+      </div>
+    </div>
+    <div class="l2-card">
+      <div class="wf-img" data-label="Service photo · 800×600"></div>
+      <div class="l2-card-body">
+        <h3>Full groom · medium</h3>
+        <p>Cockapoos, spaniels, retrievers under 25kg. Full bath and dry, breed-appropriate trim.</p>
+        <div class="meta"><span>90 min</span><span class="px">from £68</span></div>
+      </div>
+    </div>
+    <div class="l2-card">
+      <div class="wf-img" data-label="Service photo · 800×600"></div>
+      <div class="l2-card-body">
+        <h3>Full groom · large</h3>
+        <p>Doodles, setters, doubles. Includes blow-out and finishing scissor work.</p>
+        <div class="meta"><span>120 min</span><span class="px">from £84</span></div>
+      </div>
+    </div>
+    <div class="l2-card">
+      <div class="wf-img" data-label="Service photo · 800×600"></div>
+      <div class="l2-card-body">
+        <h3>Puppy first groom</h3>
+        <p>Gentle introduction for pups 12–20 weeks. Sound desensitisation included.</p>
+        <div class="meta"><span>45 min</span><span class="px">£38</span></div>
+      </div>
+    </div>
+    <div class="l2-card">
+      <div class="wf-img" data-label="Service photo · 800×600"></div>
+      <div class="l2-card-body">
+        <h3>Bath & tidy</h3>
+        <p>Bath, dry, nails and feathering tidy. For between-groom freshness.</p>
+        <div class="meta"><span>40 min</span><span class="px">£32</span></div>
+      </div>
+    </div>
+
+    <!-- GAP-ANALYSIS PLACEHOLDER — Brightside has 5 services; lens recommends 6+ -->
+    <div class="l2-card is-gap">
+      <div class="icon">+</div>
+      <h3 style="font-size:15px; margin:4px 0 6px; color:inherit;">Showcase + Grid suggests 6 items</h3>
+      <small>You have 5 — add one more to balance the grid</small>
+    </div>
+  </div>
+</section>
+
+<section class="l2-about">
+  <div class="l2-about-inner">
+    <div class="wf-img" data-label="About photo · 800×1000"></div>
+    <div>
+      <h2>One groomer, one chair, full attention.</h2>
+      <p>Brightside is run by Em, City &amp; Guilds Level 3 with 9 years' experience and a soft spot for nervous rescues. One dog in the salon at a time — no kennels, no crates, no rushing.</p>
+      <p>If your dog hates the dryer, has been turned away elsewhere, or just deserves a slower morning — book in.</p>
+    </div>
+  </div>
+</section>
+
+<section class="l2-testimonials">
+  <h2>What our regulars say</h2>
+  <div class="l2-test-row">
+    <div class="l2-test">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Em is the only groomer Milo doesn't shake the whole way home. Worth every penny."</blockquote>
+      <cite><b>Sarah Thompson</b>Cockapoo · Clifton</cite>
+    </div>
+    <div class="l2-test">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Quietest salon I've ever been in. My anxious rescue actually relaxed. Will be back."</blockquote>
+      <cite><b>James Mitchell</b>Lurcher · Redland</cite>
+    </div>
+    <div class="l2-test">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Booked the puppy first-groom for our pup. She was so patient with him. Brilliant."</blockquote>
+      <cite><b>Emma Rodriguez</b>Spaniel pup · Bishopston</cite>
+    </div>
+  </div>
+</section>
+
+<section class="l2-cta">
+  <h2>Booking is open for May & June.</h2>
+  <p>Most slots go in the first week of the month. Reserve yours before the diary fills.</p>
+  <a class="btn" href="#">Book a slot</a>
+</section>
+
+<footer class="l2-foot">
+  © 2026 Brightside · Cotham Hill, Bristol · +44 117 987 6543
+</footer>
+
+</body>
+</html>

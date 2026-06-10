@@ -1,0 +1,1007 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lens 7 · Menu &amp; Reservations — The Forge &amp; Crown</title>
+<style>
+/* —— Inlined from _shared/tokens.css for standalone use —— */
+/* Brightside fixture tokens — shared across lens comps.
+   Lens comps are wireframe-fidelity per Phase A scope. Visual polish is Phase B. */
+:root {
+  /* Foundation */
+  --f-white: #ffffff;
+  --f-wash:  #f7f5f1;
+  --f-pale:  #ebe7df;
+  --f-mid:   #8a8378;
+  --f-slate: #4a463f;
+  --f-dark:  #1c1a17;
+
+  /* Brightside brand */
+  --site-primary:    #0d7a70;   /* teal */
+  --site-primary-700:#085f57;
+  --site-cta:        #c2185b;   /* magenta */
+  --site-cta-700:    #99124a;
+
+  /* Module accent colours (for the dock — not lens chrome) */
+  --mod-voice:   #c2185b;
+  --mod-booking: #0d7a70;
+  --mod-reviews: #c2410c;
+  --mod-chatbot: #7c3aed;
+
+  /* Typography — Phase B Typography Mood Library will override these */
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-body:    'Inter', -apple-system, system-ui, sans-serif;
+
+  /* Spacing scale */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+  --s-9: 96px; --s-10: 128px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  color: var(--f-dark);
+  background: var(--f-white);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+/* Brightside content fixture is HARDCODED into each lens file —
+   this is wireframe-fidelity, not the production data-driven render. */
+
+/* Wireframe placeholder hatching */
+.wf-img {
+  background:
+    repeating-linear-gradient(45deg, var(--f-pale) 0 8px, var(--f-wash) 8px 16px);
+  border: 1px solid var(--f-pale);
+  position: relative;
+}
+.wf-img::after {
+  content: attr(data-label);
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--f-mid); font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* Banner showing the lens name + phase note */
+.lens-tag {
+  position: fixed; left: 16px; top: 16px; z-index: 200;
+  background: var(--f-dark); color: var(--f-white);
+  padding: 6px 12px; border-radius: 4px;
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 600;
+}
+.lens-tag b { color: #ffd166; font-weight: 600; }
+
+</style>
+<style>
+  /* Forge & Crown brand — overrides tokens.css for this lens only */
+  :root {
+    --fc-burgundy:    #5a1f23;
+    --fc-burgundy-700:#3f1418;
+    --fc-cream:       #f4ead8;
+    --fc-cream-700:   #e8dcc4;
+    --fc-charcoal:    #1f1c1a;
+    --fc-brass:       #a17a3e;
+    --fc-sage:        #6c7a5a;
+    --fc-paper:       #fbf6ec;
+  }
+  body { background: var(--fc-paper); color: var(--fc-charcoal); }
+
+  /* —— STICKY RESERVATION BAR —— */
+  .l7-stickybar {
+    position: sticky; top: 0; z-index: 90;
+    background: var(--fc-charcoal); color: #fff;
+    padding: 10px 32px;
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    font-size: 13px;
+  }
+  .l7-stickybar .left { display: flex; gap: 22px; align-items: center; opacity: 0.9; }
+  .l7-stickybar .left .open { color: #b6d683; font-weight: 600; }
+  .l7-stickybar .left .open::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 99px; background: #b6d683; margin-right: 7px; vertical-align: 1px; }
+  .l7-stickybar .ctr {
+    font-family: var(--font-display);
+    font-size: 17px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .l7-stickybar .ctr small { display: block; font-size: 8px; letter-spacing: 0.3em; font-family: var(--font-body); font-weight: 600; color: rgba(255,255,255,0.55); text-align: center; margin-top: -2px;}
+  .l7-stickybar .right { display: flex; justify-content: flex-end; gap: 14px; align-items: center; }
+  .l7-stickybar .right .phone { opacity: 0.9; }
+  .l7-stickybar .right .book {
+    background: var(--fc-brass); color: #1f1c1a;
+    padding: 8px 18px; border-radius: 2px;
+    font-weight: 700; font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase;
+    text-decoration: none;
+  }
+  .l7-stickybar .right .book:hover { background: #c19a55; }
+
+  /* —— SECONDARY NAV —— */
+  .l7-nav {
+    background: var(--fc-paper);
+    border-bottom: 1px solid rgba(31,28,26,0.1);
+    padding: 14px 32px;
+    display: flex; justify-content: center; gap: 36px;
+    font-size: 13.5px; font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .l7-nav a { color: var(--fc-charcoal); text-decoration: none; opacity: 0.8; }
+  .l7-nav a:hover { opacity: 1; color: var(--fc-burgundy); }
+  .l7-nav a.is-active { opacity: 1; color: var(--fc-burgundy); border-bottom: 2px solid var(--fc-brass); padding-bottom: 4px; margin-bottom: -6px; }
+
+  /* —— HERO —— */
+  .l7-hero {
+    display: grid; grid-template-columns: 1.4fr 1fr;
+    background: var(--fc-cream);
+    min-height: 560px;
+  }
+  .l7-hero-img { position: relative; overflow: hidden; }
+  .l7-hero-img .wf-img { position: absolute; inset: 0; }
+  .l7-hero-img .badge {
+    position: absolute; top: 28px; left: 28px;
+    background: rgba(31,28,26,0.7); color: #fff;
+    padding: 7px 13px; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600;
+    backdrop-filter: blur(4px);
+  }
+  .l7-hero-right {
+    padding: 64px 56px;
+    display: flex; flex-direction: column; justify-content: center;
+    background:
+      radial-gradient(circle at 90% 10%, rgba(161,122,62,0.08), transparent 50%),
+      var(--fc-cream);
+  }
+  .l7-hero-right .eyebrow {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--fc-burgundy); font-weight: 700; margin-bottom: 20px;
+  }
+  .l7-hero-right h1 {
+    font-family: var(--font-display);
+    font-size: 64px; line-height: 0.98; letter-spacing: -0.02em;
+    font-weight: 500;
+    margin: 0 0 20px;
+    color: var(--fc-burgundy-700);
+  }
+  .l7-hero-right .tagline {
+    font-size: 17px; line-height: 1.55; color: var(--fc-charcoal); opacity: 0.78;
+    margin: 0 0 32px; max-width: 36ch;
+  }
+
+  /* Reservation widget */
+  .l7-resv {
+    background: #fff;
+    border: 1px solid rgba(31,28,26,0.12);
+    border-top: 4px solid var(--fc-burgundy);
+    padding: 24px;
+    box-shadow: 0 12px 32px rgba(31,28,26,0.08);
+  }
+  .l7-resv h3 {
+    font-family: var(--font-body);
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    font-weight: 700; color: var(--fc-burgundy);
+    margin: 0 0 14px;
+  }
+  .l7-resv .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .l7-resv label { display: block; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; color: var(--fc-charcoal); opacity: 0.55; margin-bottom: 5px; }
+  .l7-resv .input {
+    border: 1px solid rgba(31,28,26,0.15);
+    padding: 11px 12px;
+    background: #fff;
+    font-size: 14px; color: var(--fc-charcoal);
+    font-family: var(--font-body);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .l7-resv .input b { font-weight: 600; }
+  .l7-resv .input small { color: var(--fc-charcoal); opacity: 0.55; font-size: 12px; margin-left: auto; }
+  .l7-resv .find {
+    width: 100%; margin-top: 6px;
+    background: var(--fc-burgundy); color: #fff;
+    border: none; padding: 14px;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    font-family: var(--font-body);
+    cursor: pointer;
+  }
+  .l7-resv .find:hover { background: var(--fc-burgundy-700); }
+  .l7-resv .alt {
+    margin-top: 10px; font-size: 12px; color: var(--fc-charcoal); opacity: 0.6; text-align: center;
+  }
+  .l7-resv .alt a { color: var(--fc-burgundy); font-weight: 600; }
+
+  /* —— QUICK FACTS —— */
+  .l7-facts {
+    background: var(--fc-burgundy);
+    color: #fff;
+    padding: 24px 32px;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+    align-items: center;
+  }
+  .l7-facts .fact {
+    display: flex; gap: 14px; align-items: center;
+    border-right: 1px solid rgba(255,255,255,0.18);
+    padding-right: 20px;
+  }
+  .l7-facts .fact:last-child { border-right: none; }
+  .l7-facts .ico {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(255,255,255,0.35);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-family: var(--font-display);
+  }
+  .l7-facts .fact small {
+    display: block; font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; opacity: 0.6; margin-bottom: 4px;
+  }
+  .l7-facts .fact b { font-size: 14px; font-weight: 500; letter-spacing: -0.005em; display: block; }
+
+  /* —— SECTION FRAME —— */
+  .l7-sec { padding: 96px 80px; }
+  .l7-sec .seclabel {
+    text-align: center;
+    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--fc-brass); font-weight: 700; margin-bottom: 12px;
+  }
+  .l7-sec .secttl {
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 46px; letter-spacing: -0.02em; font-weight: 500;
+    margin: 0 0 12px; color: var(--fc-burgundy-700);
+  }
+  .l7-sec .secsub {
+    text-align: center;
+    font-size: 16px; color: var(--fc-charcoal); opacity: 0.7;
+    max-width: 58ch; margin: 0 auto 56px;
+  }
+
+  /* —— MENU —— */
+  .l7-menu { background: var(--fc-paper); }
+  .l7-menu-tabs {
+    display: flex; justify-content: center; gap: 4px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .l7-menu-tabs .tab {
+    padding: 12px 22px;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--fc-charcoal); opacity: 0.55;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+  }
+  .l7-menu-tabs .tab.is-active {
+    opacity: 1; color: var(--fc-burgundy); border-bottom-color: var(--fc-brass);
+  }
+  .l7-menu-tabs .tab:hover { opacity: 0.9; }
+
+  .l7-menu-filters {
+    display: flex; justify-content: center; gap: 8px;
+    margin-bottom: 56px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(31,28,26,0.08);
+  }
+  .l7-menu-filters small { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fc-charcoal); opacity: 0.6; align-self: center; margin-right: 6px; font-weight: 700; }
+  .l7-menu-filters .chip {
+    padding: 6px 13px;
+    border: 1px solid rgba(31,28,26,0.18);
+    font-size: 12px; font-weight: 500;
+    color: var(--fc-charcoal);
+    cursor: pointer;
+    border-radius: 99px;
+  }
+  .l7-menu-filters .chip.is-on { background: var(--fc-burgundy); color: #fff; border-color: var(--fc-burgundy); }
+
+  .l7-menu-section { margin-bottom: 64px; }
+  .l7-menu-section h3 {
+    font-family: var(--font-display);
+    font-size: 30px; font-weight: 500;
+    text-align: center;
+    color: var(--fc-burgundy-700);
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .l7-menu-section .desc {
+    text-align: center;
+    font-size: 14px; color: var(--fc-charcoal); opacity: 0.6;
+    margin: 0 0 36px;
+    font-style: italic;
+  }
+  .l7-items {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 36px 56px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .l7-item .item-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .l7-item .item-name {
+    font-family: var(--font-display);
+    font-size: 19px; font-weight: 500;
+    color: var(--fc-charcoal);
+    letter-spacing: -0.005em;
+    flex: 1;
+  }
+  .l7-item .dots {
+    flex: 1;
+    border-bottom: 1px dotted rgba(31,28,26,0.3);
+    margin: 0 10px;
+    transform: translateY(-4px);
+  }
+  .l7-item .price {
+    font-family: var(--font-display);
+    font-size: 17px; font-weight: 500;
+    color: var(--fc-burgundy);
+  }
+  .l7-item .item-desc {
+    font-size: 13.5px; line-height: 1.55;
+    color: var(--fc-charcoal); opacity: 0.72;
+    margin: 0 0 8px;
+  }
+  .l7-item .tags { display: flex; gap: 6px; }
+  .l7-item .tag {
+    display: inline-block;
+    width: 22px; height: 22px;
+    font-size: 9.5px; font-weight: 700;
+    color: var(--fc-sage);
+    border: 1px solid var(--fc-sage);
+    border-radius: 99px;
+    text-align: center; line-height: 20px;
+    letter-spacing: 0;
+  }
+  .l7-item .tag.gf { color: #a17a3e; border-color: #a17a3e; }
+  .l7-item .tag.special {
+    width: auto; padding: 0 8px;
+    color: var(--fc-burgundy); border-color: var(--fc-burgundy);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+
+  .l7-menu-foot {
+    text-align: center;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(31,28,26,0.08);
+    font-size: 12.5px;
+    color: var(--fc-charcoal); opacity: 0.65;
+  }
+  .l7-menu-foot a { color: var(--fc-burgundy); font-weight: 600; }
+
+  /* —— SET MENUS / EVENTS —— */
+  .l7-events { background: var(--fc-cream); }
+  .l7-events-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .l7-event {
+    background: #fff;
+    border: 1px solid rgba(31,28,26,0.08);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .l7-event .wf-img { aspect-ratio: 4/3; }
+  .l7-event-body { padding: 24px 24px 28px; flex: 1; display: flex; flex-direction: column; }
+  .l7-event .kicker { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fc-burgundy); font-weight: 700; margin-bottom: 8px; }
+  .l7-event h4 { font-family: var(--font-display); font-size: 22px; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 8px; color: var(--fc-charcoal); }
+  .l7-event p { font-size: 13.5px; line-height: 1.55; color: var(--fc-charcoal); opacity: 0.7; margin: 0 0 16px; flex: 1; }
+  .l7-event .meta { display: flex; justify-content: space-between; align-items: baseline; }
+  .l7-event .price { font-family: var(--font-display); font-size: 19px; color: var(--fc-burgundy); font-weight: 500; }
+  .l7-event .link { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fc-charcoal); text-decoration: none; }
+  .l7-event .link::after { content: " →"; }
+
+  /* —— GALLERY —— */
+  .l7-gallery { background: var(--fc-paper); }
+  .l7-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: 140px;
+    gap: 6px;
+    max-width: 1280px; margin: 0 auto;
+  }
+  .l7-gallery-grid .wf-img.t1 { grid-column: span 2; grid-row: span 2; }
+  .l7-gallery-grid .wf-img.t2 { grid-column: span 2; grid-row: span 1; }
+  .l7-gallery-grid .wf-img.t3 { grid-column: span 1; grid-row: span 2; }
+  .l7-gallery-grid .wf-img.t4 { grid-column: span 1; grid-row: span 1; }
+  .l7-gallery-cta { text-align: center; margin-top: 32px; }
+  .l7-gallery-cta a {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--fc-burgundy); text-decoration: none;
+    border-bottom: 1px solid var(--fc-brass); padding-bottom: 2px;
+  }
+
+  /* —— STORY / CHEF —— */
+  .l7-story { background: var(--fc-burgundy); color: #fff; padding: 96px 80px; }
+  .l7-story-inner { display: grid; grid-template-columns: 1fr 1.2fr; gap: 64px; max-width: 1200px; margin: 0 auto; align-items: center; }
+  .l7-story-img .wf-img { aspect-ratio: 4/5; background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0 8px, rgba(255,255,255,0.02) 8px 16px);
+    border-color: rgba(255,255,255,0.18);
+  }
+  .l7-story-img .wf-img::after { color: rgba(255,255,255,0.5); }
+  .l7-story-text .label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--fc-brass); font-weight: 700; margin-bottom: 14px; }
+  .l7-story-text h2 { font-family: var(--font-display); font-size: 44px; line-height: 1.05; letter-spacing: -0.02em; font-weight: 500; margin: 0 0 24px; }
+  .l7-story-text p { font-size: 16px; line-height: 1.7; color: rgba(255,255,255,0.82); margin: 0 0 18px; }
+  .l7-story-text .sig {
+    font-family: var(--font-display); font-style: italic;
+    font-size: 22px;
+    color: var(--fc-brass);
+    margin-top: 28px;
+  }
+  .l7-story-text .sig small {
+    display: block; font-size: 10px; font-style: normal;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,255,255,0.5); font-family: var(--font-body); font-weight: 600;
+    margin-top: 4px;
+  }
+
+  /* —— REVIEWS —— */
+  .l7-reviews { background: var(--fc-paper); }
+  .l7-reviews-summary {
+    display: flex; justify-content: center; gap: 28px; align-items: center;
+    margin-bottom: 48px;
+    padding: 28px 36px; background: #fff; border: 1px solid rgba(31,28,26,0.08);
+    max-width: 720px; margin-left: auto; margin-right: auto;
+  }
+  .l7-reviews-summary .big { font-family: var(--font-display); font-size: 56px; color: var(--fc-burgundy); font-weight: 500; line-height: 1; }
+  .l7-reviews-summary .stars { color: var(--fc-brass); font-size: 22px; letter-spacing: 4px; }
+  .l7-reviews-summary .src { font-size: 13px; color: var(--fc-charcoal); opacity: 0.7; margin-top: 6px; }
+  .l7-reviews-summary .src b { color: var(--fc-charcoal); opacity: 1; }
+  .l7-reviews-summary .divider { width: 1px; height: 48px; background: rgba(31,28,26,0.12); }
+
+  .l7-reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; max-width: 1200px; margin: 0 auto; }
+  .l7-review {
+    background: #fff;
+    border: 1px solid rgba(31,28,26,0.08);
+    padding: 28px;
+  }
+  .l7-review .stars { color: var(--fc-brass); font-size: 14px; letter-spacing: 3px; margin-bottom: 14px; }
+  .l7-review p { font-size: 14.5px; line-height: 1.6; color: var(--fc-charcoal); opacity: 0.85; margin: 0 0 18px; font-style: italic; }
+  .l7-review .who { display: flex; justify-content: space-between; align-items: baseline; }
+  .l7-review .who b { font-size: 13px; font-weight: 600; }
+  .l7-review .who small { font-size: 11.5px; color: var(--fc-charcoal); opacity: 0.55; }
+
+  /* —— FIND US —— */
+  .l7-find { background: var(--fc-cream); padding: 96px 80px; }
+  .l7-find-inner {
+    display: grid; grid-template-columns: 1fr 1.4fr;
+    gap: 56px; max-width: 1280px; margin: 0 auto;
+  }
+  .l7-find h2 { font-family: var(--font-display); font-size: 44px; letter-spacing: -0.02em; font-weight: 500; margin: 0 0 32px; color: var(--fc-burgundy-700); }
+  .l7-find dl { margin: 0; }
+  .l7-find dt { font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; color: var(--fc-burgundy); margin-top: 22px; margin-bottom: 6px; }
+  .l7-find dd { margin: 0; font-size: 15px; line-height: 1.6; color: var(--fc-charcoal); }
+  .l7-find .hours-row { display: grid; grid-template-columns: 110px 1fr; gap: 8px; font-size: 14px; padding: 4px 0; }
+  .l7-find .hours-row b { font-weight: 600; }
+  .l7-find .hours-row.closed { color: var(--fc-charcoal); opacity: 0.45; }
+  .l7-find .map { position: relative; min-height: 480px; }
+  .l7-find .map .wf-img { position: absolute; inset: 0;
+    background: linear-gradient(135deg, #d6cdb8 0%, #c0b69e 100%);
+  }
+  .l7-find .map .wf-img::after { color: rgba(31,28,26,0.4); }
+  .l7-find .pin {
+    position: absolute; left: 48%; top: 44%;
+    width: 38px; height: 38px;
+    background: var(--fc-burgundy); border-radius: 99px 99px 99px 0;
+    transform: rotate(-45deg);
+    box-shadow: 0 8px 18px rgba(31,28,26,0.25);
+  }
+  .l7-find .pin::after {
+    content: ""; position: absolute; left: 11px; top: 11px;
+    width: 16px; height: 16px; background: var(--fc-brass); border-radius: 99px;
+  }
+
+  /* —— FOOTER —— */
+  .l7-foot {
+    background: var(--fc-charcoal);
+    color: rgba(255,255,255,0.7);
+    padding: 64px 80px 32px;
+  }
+  .l7-foot-grid {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 48px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .l7-foot .brand { font-family: var(--font-display); font-size: 26px; color: #fff; font-weight: 600; letter-spacing: -0.01em; }
+  .l7-foot .brand small { display: block; font-size: 9.5px; letter-spacing: 0.3em; color: rgba(255,255,255,0.45); font-family: var(--font-body); font-weight: 600; margin-top: 2px; }
+  .l7-foot .blurb { margin-top: 16px; font-size: 14px; line-height: 1.65; max-width: 36ch; }
+  .l7-foot h5 { font-family: var(--font-body); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); font-weight: 700; margin: 0 0 18px; }
+  .l7-foot ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+  .l7-foot ul a { color: rgba(255,255,255,0.85); text-decoration: none; }
+  .l7-foot .book-foot {
+    display: inline-block; margin-top: 4px;
+    background: var(--fc-brass); color: #1f1c1a;
+    padding: 11px 22px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none;
+  }
+  .l7-foot .legal {
+    padding-top: 24px;
+    display: flex; justify-content: space-between;
+    font-size: 11.5px; color: rgba(255,255,255,0.4);
+  }
+
+  /* —— FLOATING WIDGETS —— */
+  .l7-fab {
+    position: fixed; right: 24px; bottom: 24px; z-index: 100;
+    display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
+  }
+  .l7-fab .sarah {
+    background: var(--fc-burgundy); color: #fff;
+    padding: 14px 22px; border-radius: 99px;
+    box-shadow: 0 12px 28px rgba(31,28,26,0.25);
+    display: flex; gap: 10px; align-items: center;
+    font-size: 13.5px; font-weight: 600; cursor: pointer;
+  }
+  .l7-fab .sarah .dot { width: 8px; height: 8px; border-radius: 99px; background: #b6d683; }
+  .l7-fab .sarah small { display: block; font-size: 10px; font-weight: 500; opacity: 0.7; letter-spacing: 0.06em; }
+</style>
+</head>
+<body>
+
+<div class="lens-tag">Lens 07 · <b>Menu &amp; Reservations</b> · fixture: The Forge &amp; Crown</div>
+
+<!-- ============ STICKY RESERVATION BAR ============ -->
+<div class="l7-stickybar">
+  <div class="left">
+    <span class="open">Open until 10pm</span>
+    <span>·  Kitchen closes 9.30pm</span>
+  </div>
+  <div class="ctr">
+    The Forge &amp; Crown
+    <small>EST. 1847</small>
+  </div>
+  <div class="right">
+    <span class="phone">📞 0117 924 4180</span>
+    <a class="book" href="#resv">Book a table</a>
+  </div>
+</div>
+
+<!-- ============ SECONDARY NAV ============ -->
+<nav class="l7-nav">
+  <a class="is-active" href="#menu">Menu</a>
+  <a href="#events">Set menus &amp; events</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#story">Our story</a>
+  <a href="#reviews">Reviews</a>
+  <a href="#find">Find us</a>
+  <a href="#private">Private hire</a>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="l7-hero" id="resv">
+  <div class="l7-hero-img">
+    <div class="wf-img" data-label="hero · 16:9 · interior fireplace dusk"></div>
+    <div class="badge">Modern British · ££</div>
+  </div>
+  <div class="l7-hero-right">
+    <div class="eyebrow">Bristol · Clifton Village</div>
+    <h1>Honest cooking, open fire, a proper pint.</h1>
+    <p class="tagline">A 19th-century pub reborn. We cook over fire, brew our own pale ale, and put Sunday roast back where it belongs — on a long table with friends.</p>
+
+    <!-- Reservation widget -->
+    <div class="l7-resv">
+      <h3>Reserve a table</h3>
+      <div class="row">
+        <div>
+          <label>Party of</label>
+          <div class="input"><b>2 guests</b><small>▾</small></div>
+        </div>
+        <div>
+          <label>Date</label>
+          <div class="input"><b>Sat 17 May</b><small>▾</small></div>
+        </div>
+        <div>
+          <label>Time</label>
+          <div class="input"><b>7:30 pm</b><small>▾</small></div>
+        </div>
+      </div>
+      <button class="find">Find a table</button>
+      <div class="alt">Party of 8 or more? <a href="#">Private hire enquiry →</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUICK FACTS ============ -->
+<section class="l7-facts">
+  <div class="fact"><div class="ico">①</div><div><small>Cuisine</small><b>Modern British, fire-led</b></div></div>
+  <div class="fact"><div class="ico">②</div><div><small>Hours</small><b>Tue–Sun · 12pm–11pm</b></div></div>
+  <div class="fact"><div class="ico">③</div><div><small>Price range</small><b>Mains £18–£32</b></div></div>
+  <div class="fact"><div class="ico">④</div><div><small>Reservations</small><b>Recommended</b></div></div>
+  <div class="fact"><div class="ico">⑤</div><div><small>Walk-ins</small><b>Bar &amp; snug welcome</b></div></div>
+</section>
+
+<!-- ============ MENU ============ -->
+<section class="l7-sec l7-menu" id="menu">
+  <div class="seclabel">— The Heart Of It —</div>
+  <h2 class="secttl">Our menu</h2>
+  <p class="secsub">Changes weekly. Driven by our suppliers and what's good that morning. Allergens listed at the bottom of the menu — just ask.</p>
+
+  <!-- Tabs -->
+  <div class="l7-menu-tabs">
+    <div class="tab is-active">À la carte</div>
+    <div class="tab">Sunday roast</div>
+    <div class="tab">Bar snacks</div>
+    <div class="tab">Wine list</div>
+    <div class="tab">Cocktails</div>
+    <div class="tab">Kids</div>
+  </div>
+  <div class="l7-menu-filters">
+    <small>Dietary filters</small>
+    <div class="chip">Vegetarian</div>
+    <div class="chip is-on">Vegan</div>
+    <div class="chip">Gluten free</div>
+    <div class="chip">Dairy free</div>
+    <div class="chip">Nut free</div>
+  </div>
+
+  <!-- ——— SECTION: SMALL PLATES ——— -->
+  <div class="l7-menu-section">
+    <h3>Small plates &amp; starters</h3>
+    <p class="desc">— meant for sharing, but no judgement —</p>
+    <div class="l7-items">
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Smoked Cornish mackerel, gooseberry, horseradish</div>
+          <div class="dots"></div><div class="price">£9.50</div>
+        </div>
+        <p class="item-desc">Hot-smoked over apple wood by Pete in St Werburghs. Gooseberry compote, fresh horseradish, charred sourdough.</p>
+        <div class="tags"><span class="tag gf">GF</span></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Burrata, broad bean, mint, lemon oil</div>
+          <div class="dots"></div><div class="price">£11.00</div>
+        </div>
+        <p class="item-desc">La Latteria burrata, hand-podded broads, mint from the kitchen garden, Sicilian lemon oil.</p>
+        <div class="tags"><span class="tag">V</span><span class="tag gf">GF</span></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Hispi cabbage, miso butter, sesame</div>
+          <div class="dots"></div><div class="price">£8.50</div>
+        </div>
+        <p class="item-desc">Charred over fire until it almost gives up. White miso butter, black sesame, lime.</p>
+        <div class="tags"><span class="tag">Ve</span><span class="tag special">Chef's pick</span></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Crispy pig's head, piccalilli, watercress</div>
+          <div class="dots"></div><div class="price">£10.00</div>
+        </div>
+        <p class="item-desc">Slow-braised, pressed, breaded, fried. Our own piccalilli — punchy enough to wake your grandmother.</p>
+        <div class="tags"></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Beef-fat sourdough, cultured butter</div>
+          <div class="dots"></div><div class="price">£4.50</div>
+        </div>
+        <p class="item-desc">Loaf baked here every morning. The crust is non-negotiable.</p>
+        <div class="tags"><span class="tag">V</span></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Wood-grilled flatbread, smoked aubergine, pomegranate</div>
+          <div class="dots"></div><div class="price">£7.50</div>
+        </div>
+        <p class="item-desc">Baked on the hearth. Charred aubergine purée, tahini, mint, pomegranate molasses.</p>
+        <div class="tags"><span class="tag">Ve</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ——— SECTION: MAINS ——— -->
+  <div class="l7-menu-section">
+    <h3>From the fire</h3>
+    <p class="desc">— our hearth is on from noon. Everything comes off it —</p>
+    <div class="l7-items">
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">35-day aged Hereford ribeye, bone marrow, watercress</div>
+          <div class="dots"></div><div class="price">£32.00</div>
+        </div>
+        <p class="item-desc">300g, on the bone, dry-aged in our cellar. Bone-marrow gravy on the side. Triple-cooked chips +£5.</p>
+        <div class="tags"><span class="tag gf">GF</span><span class="tag special">Chef's pick</span></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Whole grilled lemon sole, samphire, brown butter</div>
+          <div class="dots"></div><div class="price">£28.00</div>
+        </div>
+        <p class="item-desc">Day-boat from Brixham. Cooked over coals, finished with capers and lemon. On the bone — we'll fillet at the table.</p>
+        <div class="tags"><span class="tag gf">GF</span></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Slow-cooked lamb shoulder, wood-roasted carrots, salsa verde</div>
+          <div class="dots"></div><div class="price">£24.00</div>
+        </div>
+        <p class="item-desc">12 hours over embers. Salt-marsh lamb from Goosnargh. Salsa verde sharp with anchovy and capers.</p>
+        <div class="tags"><span class="tag gf">GF</span></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Roasted celeriac, brown butter, hazelnut, sage</div>
+          <div class="dots"></div><div class="price">£18.00</div>
+        </div>
+        <p class="item-desc">A celeriac the size of your head, slow-roasted whole in the embers, sliced thick. Surprisingly meaty.</p>
+        <div class="tags"><span class="tag">V</span><span class="tag gf">GF</span></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Forge &amp; Crown cheeseburger, smoked bacon, fries</div>
+          <div class="dots"></div><div class="price">£19.00</div>
+        </div>
+        <p class="item-desc">Dry-aged Hereford patty, Montgomery cheddar, smoked streaky, brioche from Mark's bakery, gherkin on the side.</p>
+        <div class="tags"></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Wild garlic &amp; ricotta gnudi, peas, parmesan</div>
+          <div class="dots"></div><div class="price">£21.00</div>
+        </div>
+        <p class="item-desc">Pillowy ricotta dumplings, foraged wild garlic, fresh peas, aged parmesan. Light enough to call lunch.</p>
+        <div class="tags"><span class="tag">V</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ——— SECTION: PUDDINGS ——— -->
+  <div class="l7-menu-section">
+    <h3>Puddings &amp; cheese</h3>
+    <p class="desc">— save room. The fridge magnet says so —</p>
+    <div class="l7-items">
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Treacle tart, clotted cream, lemon</div>
+          <div class="dots"></div><div class="price">£8.50</div>
+        </div>
+        <p class="item-desc">Short pastry, dark golden filling, a wedge of Rodda's. A Sunday tradition.</p>
+        <div class="tags"><span class="tag">V</span></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Burnt Basque cheesecake, gooseberry</div>
+          <div class="dots"></div><div class="price">£8.00</div>
+        </div>
+        <p class="item-desc">From our pastry chef Jess. Burnt top, wobble in the middle, gooseberry compote on the side.</p>
+        <div class="tags"><span class="tag">V</span></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Selection of West Country cheese, oatcakes, quince</div>
+          <div class="dots"></div><div class="price">£12.00</div>
+        </div>
+        <p class="item-desc">Five from the Trethowan, Westcombe and Quicke's dairies. Quince paste, celery, oatcakes from Pinney's.</p>
+        <div class="tags"><span class="tag">V</span></div>
+      </div>
+      <div class="l7-item">
+        <div class="item-head">
+          <div class="item-name">Sticky toffee, salted caramel, vanilla ice cream</div>
+          <div class="dots"></div><div class="price">£8.50</div>
+        </div>
+        <p class="item-desc">Date sponge, toffee sauce that would dissolve a lesser teaspoon, Marshfield Farm ice cream.</p>
+        <div class="tags"><span class="tag">V</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="l7-menu-foot">
+    Tags · <b>V</b> Vegetarian · <b>Ve</b> Vegan · <b>GF</b> Gluten Free<br>
+    Please flag allergies or intolerances to your server. <a href="#">Full allergen menu →</a><br>
+    A discretionary 12.5% service charge is added. 100% goes to the team.
+  </div>
+</section>
+
+<!-- ============ SET MENUS / EVENTS ============ -->
+<section class="l7-sec l7-events" id="events">
+  <div class="seclabel">— Set Menus &amp; Events —</div>
+  <h2 class="secttl">What's on this season</h2>
+  <p class="secsub">From long Sunday lunches to wine suppers and the quiet pleasure of a Tuesday set menu.</p>
+
+  <div class="l7-events-grid">
+    <div class="l7-event">
+      <div class="wf-img" data-label="sunday roast · 4:3"></div>
+      <div class="l7-event-body">
+        <div class="kicker">Every Sunday · 12–6pm</div>
+        <h4>Sunday Roast</h4>
+        <p>Three roasts, all the trimmings, Yorkshire so tall it has its own postcode. Goes on until we run out — which we always do.</p>
+        <div class="meta"><div class="price">£26 / 2 courses</div><a class="link" href="#">See menu</a></div>
+      </div>
+    </div>
+    <div class="l7-event">
+      <div class="wf-img" data-label="wine supper · 4:3"></div>
+      <div class="l7-event-body">
+        <div class="kicker">Thurs 22 May · 7pm</div>
+        <h4>Loire Valley Wine Supper</h4>
+        <p>Five courses, five glasses. Winemaker Pascal Janvier joins us from the Coteaux du Loir to walk through every bottle.</p>
+        <div class="meta"><div class="price">£75 pp</div><a class="link" href="#">Book ticket</a></div>
+      </div>
+    </div>
+    <div class="l7-event">
+      <div class="wf-img" data-label="tuesday set · 4:3"></div>
+      <div class="l7-event-body">
+        <div class="kicker">Tue–Thu · 6–7pm</div>
+        <h4>Early Supper Set Menu</h4>
+        <p>Three courses from our seasonal kitchen, no compromise. A glass of house red or white tucked in if you'd like.</p>
+        <div class="meta"><div class="price">£28 / 3 courses</div><a class="link" href="#">See menu</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GALLERY ============ -->
+<section class="l7-sec l7-gallery" id="gallery">
+  <div class="seclabel">— Around The Pub —</div>
+  <h2 class="secttl">Inside the Forge</h2>
+  <p class="secsub">The dining room. The hearth. The garden in July. Sunday lunchtime, the moment before service.</p>
+
+  <div class="l7-gallery-grid">
+    <div class="wf-img t1" data-label="hearth, plates landing"></div>
+    <div class="wf-img t2" data-label="dining room dusk"></div>
+    <div class="wf-img t4" data-label="chef plating"></div>
+    <div class="wf-img t4" data-label="ribeye, fire"></div>
+    <div class="wf-img t3" data-label="bar pour"></div>
+    <div class="wf-img t2" data-label="garden, summer"></div>
+    <div class="wf-img t4" data-label="bread proving"></div>
+    <div class="wf-img t4" data-label="snug, two-top"></div>
+    <div class="wf-img t4" data-label="cheese trolley"></div>
+    <div class="wf-img t4" data-label="ale pull"></div>
+  </div>
+
+  <div class="l7-gallery-cta"><a href="#">See full gallery →</a></div>
+</section>
+
+<!-- ============ STORY / CHEF ============ -->
+<section class="l7-story" id="story">
+  <div class="l7-story-inner">
+    <div class="l7-story-img">
+      <div class="wf-img" data-label="chef tom portrait · 4:5"></div>
+    </div>
+    <div class="l7-story-text">
+      <div class="label">— The Story —</div>
+      <h2>An old pub. A new fire. The same idea since 1847.</h2>
+      <p>The Forge &amp; Crown has stood on Princess Victoria Street since 1847 — first as a coaching inn, later as a working-man's pub, then quietly forgotten. We took it on in 2019, tore out the carpet, and built a proper wood-fired hearth where the dartboard used to be.</p>
+      <p>We work with the people who grow, raise and catch what ends up on the plate — Pete the smoker in St Werburghs, the Trethowans at Park Farm, the boats out of Brixham. We bake our own bread, brew our own pale ale, and pull pints for the regulars who still call this their local.</p>
+      <p>It's a pub first. The food just happens to be very, very good.</p>
+      <div class="sig">— Tom &amp; Ellie Fairfax<small>Chef-owners</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REVIEWS ============ -->
+<section class="l7-sec l7-reviews" id="reviews">
+  <div class="seclabel">— What Guests Say —</div>
+  <h2 class="secttl">Reviews</h2>
+  <p class="secsub">Pulled live from Google, OpenTable and Trustpilot. Honest mix — the four-stars too.</p>
+
+  <div class="l7-reviews-summary">
+    <div>
+      <div class="big">4.8</div>
+      <div class="stars">★★★★★</div>
+    </div>
+    <div class="divider"></div>
+    <div>
+      <div class="src"><b>1,247 reviews</b> across Google, OpenTable, Trustpilot</div>
+      <div class="src">Most-mentioned: <i>"Sunday roast", "fire", "warm welcome"</i></div>
+    </div>
+  </div>
+
+  <div class="l7-reviews-grid">
+    <div class="l7-review">
+      <div class="stars">★★★★★</div>
+      <p>"Best Sunday roast in Bristol, full stop. The Yorkshire arrived like a small hat. We've already booked next month."</p>
+      <div class="who"><b>Hannah W.</b><small>OpenTable · 12 May</small></div>
+    </div>
+    <div class="l7-review">
+      <div class="stars">★★★★★</div>
+      <p>"The lamb shoulder is a religious experience. Service unhurried, room buzzing, fire roaring. It feels like a proper village pub doing seriously good food."</p>
+      <div class="who"><b>James &amp; Priya</b><small>Google · 6 May</small></div>
+    </div>
+    <div class="l7-review">
+      <div class="stars">★★★★☆</div>
+      <p>"Food was excellent — the smoked mackerel especially. Slightly noisy in the main room on a Saturday but that's the only quibble. Will be back."</p>
+      <div class="who"><b>Marcus D.</b><small>Trustpilot · 28 Apr</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FIND US ============ -->
+<section class="l7-find" id="find">
+  <div class="l7-find-inner">
+    <div>
+      <h2>Find us.</h2>
+      <dl>
+        <dt>Address</dt>
+        <dd>14 Princess Victoria Street<br>Clifton, Bristol BS8 4BU</dd>
+
+        <dt>Phone</dt>
+        <dd>0117 924 4180</dd>
+
+        <dt>Email</dt>
+        <dd>hello@forgeandcrown.co.uk</dd>
+
+        <dt>Opening hours</dt>
+        <dd style="margin-top: 8px;">
+          <div class="hours-row closed"><b>Monday</b><span>Closed</span></div>
+          <div class="hours-row"><b>Tuesday</b><span>12pm – 11pm  ·  Kitchen 6–9.30pm</span></div>
+          <div class="hours-row"><b>Wed–Fri</b><span>12pm – 11pm  ·  Kitchen 12–2.30 &amp; 6–9.30pm</span></div>
+          <div class="hours-row"><b>Saturday</b><span>11am – 11pm  ·  Kitchen all day</span></div>
+          <div class="hours-row"><b>Sunday</b><span>12pm – 9pm  ·  Roast 12–6pm</span></div>
+        </dd>
+
+        <dt>Getting here</dt>
+        <dd>5 mins from Clifton Down station. Pay-and-display parking on Boyce's Avenue. Step-free access through the side door.</dd>
+      </dl>
+    </div>
+    <div class="map">
+      <div class="wf-img" data-label="map · clifton village, bristol"></div>
+      <div class="pin"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="l7-foot">
+  <div class="l7-foot-grid">
+    <div>
+      <div class="brand">The Forge &amp; Crown<small>EST. 1847 · CLIFTON</small></div>
+      <p class="blurb">Honest cooking over fire. A proper pint. A welcome to anyone who comes through the door. Princess Victoria Street since 1847.</p>
+      <a class="book-foot" href="#resv">Book a table</a>
+    </div>
+    <div>
+      <h5>Eat &amp; Drink</h5>
+      <ul>
+        <li><a href="#">À la carte menu</a></li>
+        <li><a href="#">Sunday roast</a></li>
+        <li><a href="#">Wine list</a></li>
+        <li><a href="#">Bar &amp; snacks</a></li>
+        <li><a href="#">Allergens</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Visit</h5>
+      <ul>
+        <li><a href="#">Book a table</a></li>
+        <li><a href="#">Private hire</a></li>
+        <li><a href="#">Gift vouchers</a></li>
+        <li><a href="#">Events &amp; suppers</a></li>
+        <li><a href="#">Newsletter</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Find us</h5>
+      <ul>
+        <li>14 Princess Victoria St</li>
+        <li>Clifton, Bristol BS8 4BU</li>
+        <li><a href="tel:01179244180">0117 924 4180</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Sign up for the newsletter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="legal">
+    <div>© 2026 The Forge &amp; Crown Ltd · Co. no. 11234567</div>
+    <div>Privacy · Cookies · Modern Slavery Statement</div>
+  </div>
+</footer>
+
+<!-- ============ FLOATING WIDGETS ============ -->
+<div class="l7-fab">
+  <div class="sarah">
+    <div class="dot"></div>
+    <div>Ask Sarah<small>"Do you do gluten-free?"</small></div>
+  </div>
+</div>
+
+</body>
+</html>

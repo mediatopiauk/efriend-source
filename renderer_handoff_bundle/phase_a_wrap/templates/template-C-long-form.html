@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<!-- ─────────────────────────────────────────────────────────
+     TEMPLATE C · LONG-FORM · routed page
+     Inheriting from: Lens 1 · Editorial Foundation (lens-agnostic baseline)
+     Fixture: Severn Cut · Bridgnorth
+     URL pattern: /blog/{slug} · /policies/{slug} · /news/{slug}
+                  → /blog/17-years-sharpening-bristols-knives
+     Single-column 720 max + TOC + meta + sidebar CTA.
+     ───────────────────────────────────────────────────────── -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>17 years of sharpening Bristol's knives · Severn Cut</title>
+<style>
+:root {
+  /* Inherited from Lens 1 Editorial Foundation host */
+  --foundation-white: #ffffff;
+  --foundation-wash:  #f7f5f1;
+  --foundation-pale:  #ebe5d8;
+  --foundation-mid:   #6b6256;
+  --foundation-slate: #4a463f;
+  --foundation-dark:  #1a1812;
+  --foundation-navy:  #0f1419;
+
+  /* Severn Cut brand (from wizard Step 1) */
+  --site-primary:     #2a3a48;       /* deep steel */
+  --site-primary-700: #1a2a37;
+  --site-primary-100: #dbe2ea;
+  --site-cta:         #b78c45;       /* brass */
+  --site-cta-700:     #8d6b30;
+
+  --font-display: 'Space Grotesk', 'Helvetica Neue', system-ui, sans-serif;
+  --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono:    ui-monospace, "SF Mono", Menlo, monospace;
+
+  --preset-radius-sm: 8px;
+  --preset-radius-md: 12px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--foundation-white); color: var(--foundation-dark); font-family: var(--font-body); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; display: block; }
+a { color: inherit; transition: color 120ms var(--ease); }
+h1, h2, h3, h4 { font-family: var(--font-display); color: var(--foundation-dark); margin: 0; letter-spacing: -0.02em; font-weight: 600; }
+
+.wf-img {
+  background: repeating-linear-gradient(45deg, var(--foundation-pale) 0 10px, var(--foundation-wash) 10px 20px);
+  border: 1px solid rgba(26,24,18,0.06);
+  position: relative;
+}
+.wf-img::after {
+  content: attr(data-label);
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--foundation-mid); font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+
+.tpl-tag {
+  position: fixed; left: 16px; top: 16px; z-index: 200;
+  background: var(--foundation-dark); color: #fff;
+  padding: 6px 12px; border-radius: 4px;
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
+}
+.tpl-tag b { color: #b78c45; }
+
+/* ═══════ NAV (inherited from Lens 1) ═══════ */
+.nav-wrap { background: var(--foundation-white); border-bottom: 1px solid var(--foundation-pale); position: sticky; top: 0; z-index: 40; }
+.nav { max-width: 1280px; margin: 0 auto; padding: 18px 32px; display: flex; align-items: center; gap: 32px; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--foundation-dark); font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: -0.015em; }
+.brand-mark { width: 36px; height: 36px; border-radius: 8px; background: var(--site-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; letter-spacing: 0; font-family: var(--font-display); }
+.nav .links { display: flex; gap: 28px; font-size: 14px; font-weight: 500; }
+.nav .links a { text-decoration: none; color: var(--foundation-slate); }
+.nav .links a:hover { color: var(--site-primary); }
+.nav .right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+.nav .right .ghost { font-size: 13px; color: var(--foundation-slate); text-decoration: none; padding: 9px 14px; }
+.nav .right .cta { background: var(--site-cta); color: #fff; padding: 11px 18px; font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; text-decoration: none; border-radius: var(--preset-radius-sm); }
+
+/* ═══════ READING PROGRESS BAR ═══════ */
+.progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--site-cta); z-index: 50; width: 38%; transition: width 60ms linear; }
+
+/* ═══════ ARTICLE HEAD ═══════ */
+.head-wrap { background: var(--foundation-wash); border-bottom: 1px solid var(--foundation-pale); padding: 56px 32px 48px; }
+.head { max-width: 720px; margin: 0 auto; }
+.crumb { font-size: 12.5px; color: var(--foundation-mid); display: flex; gap: 8px; margin-bottom: 24px; }
+.crumb a { color: var(--foundation-mid); text-decoration: none; }
+.crumb a:hover { color: var(--foundation-dark); }
+.crumb b { color: var(--foundation-dark); font-weight: 500; }
+.crumb .sep { opacity: 0.4; }
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--site-cta); margin-bottom: 18px; }
+.head h1 { font-size: 52px; line-height: 1.05; letter-spacing: -0.025em; max-width: 18ch; margin-bottom: 22px; }
+.head .deck { font-family: var(--font-body); font-size: 19px; line-height: 1.55; color: var(--foundation-slate); max-width: 56ch; font-weight: 400; }
+.head .meta { display: flex; gap: 18px; margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--foundation-pale); font-size: 13.5px; color: var(--foundation-mid); align-items: center; flex-wrap: wrap; }
+.head .meta .author { display: flex; gap: 12px; align-items: center; }
+.head .meta .av { width: 44px; height: 44px; border-radius: 99px; background: var(--site-primary-100); position: relative; border: 1px solid var(--site-primary-100); }
+.head .meta .av::after { content: "LW"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--site-primary); }
+.head .meta .author b { display: block; color: var(--foundation-dark); font-weight: 600; font-size: 14px; }
+.head .meta .author small { font-size: 12.5px; }
+.head .meta .stat { display: flex; gap: 5px; align-items: center; font-size: 12.5px; }
+.head .meta .stat b { color: var(--foundation-dark); font-weight: 600; }
+.head .meta .share { margin-left: auto; display: flex; gap: 6px; }
+.head .meta .share a { width: 34px; height: 34px; border-radius: 99px; border: 1px solid var(--foundation-pale); display: inline-flex; align-items: center; justify-content: center; text-decoration: none; color: var(--foundation-slate); font-size: 14px; background: #fff; }
+.head .meta .share a:hover { border-color: var(--foundation-dark); color: var(--foundation-dark); }
+
+/* ═══════ HERO IMAGE ═══════ */
+.hero-img-wrap { padding: 32px 32px 0; }
+.hero-img { max-width: 1080px; margin: 0 auto; aspect-ratio: 16/9; }
+
+/* ═══════ ARTICLE BODY ═══════ */
+.article-wrap { padding: 48px 32px 96px; }
+.article { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr 240px; gap: 64px; align-items: flex-start; }
+
+/* TOC */
+.toc { position: sticky; top: 96px; align-self: flex-start; font-size: 13px; }
+.toc h5 { font-family: var(--font-body); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--foundation-mid); font-weight: 700; margin-bottom: 14px; }
+.toc ul { list-style: none; display: flex; flex-direction: column; gap: 4px; border-left: 1px solid var(--foundation-pale); padding-left: 14px; }
+.toc a { color: var(--foundation-mid); text-decoration: none; padding: 5px 0; display: block; font-size: 13px; line-height: 1.4; }
+.toc a:hover { color: var(--foundation-dark); }
+.toc a.active { color: var(--site-primary); font-weight: 600; position: relative; }
+.toc a.active::before { content: ""; position: absolute; left: -15px; top: 8px; width: 3px; height: 16px; background: var(--site-primary); }
+
+/* Body type */
+.prose { max-width: 720px; font-size: 18px; line-height: 1.75; color: var(--foundation-dark); }
+.prose p { margin-bottom: 24px; }
+.prose p:first-of-type::first-letter {
+  font-family: var(--font-display); font-size: 64px; font-weight: 700;
+  float: left; line-height: 0.85; padding-right: 12px; padding-top: 8px;
+  color: var(--site-primary);
+}
+.prose p strong { color: var(--foundation-dark); font-weight: 700; }
+.prose p em { color: var(--foundation-slate); font-style: italic; }
+.prose h2 { font-size: 32px; line-height: 1.15; margin: 56px 0 18px; max-width: 22ch; scroll-margin-top: 96px; }
+.prose h2 .num { display: block; font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: var(--site-cta); letter-spacing: 0.18em; margin-bottom: 10px; }
+.prose h3 { font-size: 22px; margin: 36px 0 14px; }
+.prose ul, .prose ol { margin: 0 0 24px 24px; }
+.prose ul li, .prose ol li { margin-bottom: 8px; line-height: 1.65; }
+.prose ul { list-style: none; }
+.prose ul li { position: relative; padding-left: 18px; }
+.prose ul li::before { content: "—"; position: absolute; left: 0; color: var(--site-cta); font-weight: 700; }
+.prose a { color: var(--site-primary); text-decoration: underline; text-decoration-color: rgba(42,58,72,0.3); text-underline-offset: 3px; }
+.prose a:hover { text-decoration-color: var(--site-primary); }
+.prose blockquote {
+  margin: 36px 0;
+  padding: 22px 28px;
+  border-left: 4px solid var(--site-cta);
+  background: var(--foundation-wash);
+  font-family: var(--font-display);
+  font-size: 22px; line-height: 1.4; font-weight: 500; letter-spacing: -0.015em;
+  color: var(--foundation-dark);
+}
+.prose blockquote cite { display: block; font-family: var(--font-body); font-style: normal; font-size: 13px; color: var(--foundation-mid); margin-top: 12px; font-weight: 500; letter-spacing: 0.04em; }
+
+.prose .pull-fig { margin: 36px 0; }
+.prose .pull-fig .wf-img { aspect-ratio: 16/9; }
+.prose .pull-fig figcaption { font-size: 13px; color: var(--foundation-mid); padding: 10px 4px 0; font-style: italic; line-height: 1.45; }
+
+.prose .callout {
+  margin: 36px 0; padding: 20px 24px;
+  background: var(--site-primary-100);
+  border-radius: var(--preset-radius-sm);
+}
+.prose .callout small { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--site-primary); display: block; margin-bottom: 8px; }
+.prose .callout p { font-size: 16px; line-height: 1.55; margin: 0; color: var(--foundation-dark); }
+.prose .callout p::first-letter { all: unset; }
+.prose .callout p strong { color: var(--site-primary); }
+
+.prose hr { border: none; border-top: 1px solid var(--foundation-pale); margin: 48px 0; }
+
+/* Sidebar */
+.aside { position: sticky; top: 96px; align-self: flex-start; display: flex; flex-direction: column; gap: 20px; font-size: 14px; }
+.side-card { background: var(--foundation-wash); padding: 22px; border-radius: var(--preset-radius-md); border: 1px solid var(--foundation-pale); }
+.side-card h4 { font-family: var(--font-body); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--foundation-mid); font-weight: 700; margin-bottom: 14px; }
+.side-card.cta { background: var(--foundation-navy); color: #fff; border-color: var(--foundation-navy); }
+.side-card.cta h4 { color: #c4b48f; }
+.side-card.cta b { display: block; font-family: var(--font-display); font-size: 19px; font-weight: 600; line-height: 1.2; letter-spacing: -0.015em; color: #fff; margin-bottom: 8px; }
+.side-card.cta p { font-size: 13.5px; line-height: 1.55; color: rgba(255,255,255,0.72); margin-bottom: 14px; }
+.side-card.cta a { background: var(--site-cta); color: #fff; display: block; text-align: center; padding: 11px; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; border-radius: var(--preset-radius-sm); }
+.side-card .stat-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--foundation-pale); font-size: 13px; }
+.side-card .stat-row:last-of-type { border-bottom: none; padding-bottom: 0; }
+.side-card .stat-row b { font-family: var(--font-display); font-weight: 600; color: var(--foundation-dark); }
+.side-card .small-l { font-size: 11px; color: var(--foundation-mid); font-weight: 500; letter-spacing: 0.04em; }
+
+.side-author { padding: 20px; background: #fff; border: 1px solid var(--foundation-pale); border-radius: var(--preset-radius-md); }
+.side-author .row { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+.side-author .av { width: 44px; height: 44px; border-radius: 99px; background: var(--site-primary-100); position: relative; }
+.side-author .av::after { content: "LW"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--site-primary); }
+.side-author b { font-size: 14.5px; font-weight: 600; }
+.side-author small { font-size: 12px; color: var(--foundation-mid); }
+.side-author p { font-size: 13px; color: var(--foundation-slate); line-height: 1.55; }
+.side-author a { display: block; margin-top: 12px; font-size: 12px; color: var(--site-primary); font-weight: 600; letter-spacing: 0.04em; text-decoration: none; }
+
+/* ═══════ RELATED ═══════ */
+.related { background: var(--foundation-wash); padding: 80px 32px; border-top: 1px solid var(--foundation-pale); }
+.related-in { max-width: 1080px; margin: 0 auto; }
+.related h2 { font-size: 32px; margin-bottom: 36px; letter-spacing: -0.02em; }
+.related-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+.related-item { background: #fff; border: 1px solid var(--foundation-pale); border-radius: var(--preset-radius-md); overflow: hidden; text-decoration: none; color: inherit; }
+.related-item .wf-img { aspect-ratio: 16/9; }
+.related-item .body { padding: 20px; }
+.related-item small { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--site-cta); display: block; margin-bottom: 10px; }
+.related-item h4 { font-size: 18px; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; margin-bottom: 10px; }
+.related-item p { font-size: 13.5px; color: var(--foundation-mid); line-height: 1.55; margin-bottom: 14px; }
+.related-item .meta { font-size: 12px; color: var(--foundation-mid); display: flex; gap: 14px; }
+
+/* ═══════ FOOTER ═══════ */
+.footer { background: var(--foundation-navy); color: #cbd5e1; padding: 64px 32px 32px; }
+.footer-top { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr repeat(4, 1fr); gap: 48px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.footer-brand .brand-mark { background: #fff; color: var(--site-primary); }
+.footer-brand .brand { color: #fff; font-size: 18px; }
+.footer-brand p { font-size: 13.5px; line-height: 1.55; max-width: 32ch; margin: 16px 0 0; color: #94a3b8; }
+.footer h5 { font-family: var(--font-body); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.5); font-weight: 700; margin: 0 0 16px; }
+.footer ul { list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 13.5px; }
+.footer ul a { color: rgba(255,255,255,0.78); text-decoration: none; }
+.footer ul a:hover { color: #fff; }
+.footer .legal { max-width: 1280px; margin: 24px auto 0; padding-top: 16px; display: flex; justify-content: space-between; font-size: 11.5px; color: rgba(255,255,255,0.4); }
+
+@media (max-width: 980px) {
+  .article { grid-template-columns: 1fr; gap: 32px; }
+  .toc, .aside { position: static; }
+}
+</style>
+</head>
+<body>
+
+<div class="tpl-tag">Template C · <b>Long-form</b> · Lens 1 inheritance · /blog/17-years-sharpening-bristols-knives</div>
+
+<div class="progress" id="progress"></div>
+
+<!-- ═══════ NAV ═══════ -->
+<div class="nav-wrap">
+  <header class="nav">
+    <a class="brand" href="#"><span class="brand-mark">SC</span>Severn Cut</a>
+    <div class="links">
+      <a href="#">Work</a>
+      <a href="#">Capabilities</a>
+      <a href="#" style="color: var(--site-primary); font-weight: 600;">Stories</a>
+      <a href="#">About</a>
+      <a href="#">Visit</a>
+    </div>
+    <div class="right">
+      <a class="ghost" href="tel:01746550221">📞 01746 550 221</a>
+      <a class="cta" href="#">Request a quote</a>
+    </div>
+  </header>
+</div>
+
+<!-- ═══════ ARTICLE HEAD ═══════ -->
+<section class="head-wrap">
+  <div class="head">
+    <div class="crumb">
+      <a href="/">Home</a><span class="sep">/</span>
+      <a href="/stories">Stories</a><span class="sep">/</span>
+      <b>17 years of sharpening Bristol's knives</b>
+    </div>
+    <div class="eyebrow">Workshop journal · long read</div>
+    <h1>17 years of sharpening<br>Bristol's knives.</h1>
+    <p class="deck">A short history of a long apprenticeship. How a former tool-and-die maker in Bridgnorth ended up holding the edges of the south west's best kitchens — and what we've learned along the way about steel, patience, and saying no.</p>
+
+    <div class="meta">
+      <div class="author">
+        <div class="av"></div>
+        <div>
+          <b>Lewis Whitcombe</b>
+          <small>Founder · Severn Cut</small>
+        </div>
+      </div>
+      <div class="stat">📅 <b>11 May 2026</b></div>
+      <div class="stat">⏱ <b>12 min</b> read</div>
+      <div class="stat">📍 <b>Bridgnorth, Shropshire</b></div>
+      <div class="share">
+        <a href="#" title="Email">✉</a>
+        <a href="#" title="Link">🔗</a>
+        <a href="#" title="Print">⎙</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ HERO IMAGE ═══════ -->
+<div class="hero-img-wrap">
+  <div class="wf-img hero-img" data-label="Hero · workshop · Lewis at the wheel · golden light"></div>
+</div>
+
+<!-- ═══════ ARTICLE BODY ═══════ -->
+<section class="article-wrap">
+  <div class="article">
+
+    <!-- TOC -->
+    <aside class="toc">
+      <h5>On this page</h5>
+      <ul>
+        <li><a class="active" href="#s1">01 · The first knife</a></li>
+        <li><a href="#s2">02 · Why we left commission work</a></li>
+        <li><a href="#s3">03 · How a kitchen actually wears its knives</a></li>
+        <li><a href="#s4">04 · The Bristol chefs who turned up</a></li>
+        <li><a href="#s5">05 · What we'd tell a 26-year-old us</a></li>
+        <li><a href="#s6">06 · What's next</a></li>
+      </ul>
+    </aside>
+
+    <!-- PROSE -->
+    <article class="prose">
+
+      <p><strong>Seventeen years ago this April</strong>, I sharpened a knife for someone who didn't know me, in a workshop that didn't have a roof, with a wheel I'd bought off a man who was retiring from sharpening agricultural blades in Telford. The knife belonged to a chef called Idris Owen, who had just opened a restaurant in Clifton and had been told by a fishmonger to "find the man in Bridgnorth who does the proper job." I charged him £4.50. He paid in cash. He came back the following week with eleven more knives and a bottle of single malt. I have not had a quiet Thursday since.</p>
+
+      <p>This is the short story of those seventeen years — and a few of the things they've taught us about <em>what we're actually doing</em> when we put a knife to a stone.</p>
+
+      <h2 id="s1"><span class="num">§ 01</span>The first knife</h2>
+
+      <p>I trained as a tool-and-die maker at Caterpillar in Wolverhampton. I left in 2007 because the work had gone — the line where I'd done my apprenticeship was being shipped to Belgium — and because I'd just started a family. <strong>I needed something I could do in a shed.</strong> The shed I had was my grandfather's, behind the cottage on Hospital Street. The first thing I sharpened in it was my own carving knife. The second thing I sharpened in it was my neighbour Brian's secateurs. The third was Idris Owen's Sabatier.</p>
+
+      <figure class="pull-fig"><div class="wf-img" data-label="Workshop on Hospital Street · April 2009"></div><figcaption>April 2009. The grinding wheel had cost me £180 from a man called Trevor in Telford. The roof would arrive in September.</figcaption></figure>
+
+      <p>That Sabatier is on the wall above the bench. The handle is darker than it was. The bolster has been thinned twice. The blade is now about 2.4 mm shorter, top to spine, than it was when Idris brought it in. He gave it to me last year when he sold the restaurant. He said he wanted to know it was being looked after.</p>
+
+      <div class="callout">
+        <small>Aside</small>
+        <p>If you have a knife you'd like us to look at the way we looked at Idris's, <strong>send a photo to lewis@severncut.co</strong>. We're not on social media. We answer every email — usually within two days, often the same one if it's quiet.</p>
+      </div>
+
+      <h2 id="s2"><span class="num">§ 02</span>Why we left commission work</h2>
+
+      <p>For the first nine years we made knives. Not many. A friend in Bristol — Hannah, the chef at Box Hall — wanted a santoku for her own use. Then four more. Then six for her team. Word moved sideways through the south west the way it always does in this trade: <a href="#">one chef tells another chef</a>, who tells the supplier they were having lunch with.</p>
+
+      <p>By 2017 we had a six-month backlog of commission orders for chef's knives. We had hired Mei (still here, now runs heat-treatment) and Joe (here for three years, now in Sheffield doing his own thing). We were making twelve knives a month. Each one took thirty-six to fifty hours. Each one sold for between £380 and £950.</p>
+
+      <p>And we were not very happy.</p>
+
+      <blockquote>
+        Making the knife is the easiest part. Sharpening someone else's knife — properly, every six weeks for ten years — is what actually keeps a kitchen alive.
+        <cite>— What Mei said to me, in 2017, after she finally got bored of me being miserable about it</cite>
+      </blockquote>
+
+      <p>She was right. We took every knife-making order off the books that quarter. We paid back the deposits. We wrote thirty-one apology letters and sent them with bottles of decent wine. We bought a third grinding wheel, a Tormek, and a proper Japanese pull-through stone setup. <strong>We have not made a knife to commission since 2017.</strong> We sharpen between four and six hundred a month.</p>
+
+      <h2 id="s3"><span class="num">§ 03</span>How a kitchen actually wears its knives</h2>
+
+      <p>If you ask twenty chefs how they think a kitchen wears its knives, you'll get twenty answers — and almost all of them will mention the chopping board. The chopping board is part of it. It's nowhere near the whole of it. Here is what actually happens, in roughly the order it happens:</p>
+
+      <ul>
+        <li><strong>Day one to day four:</strong> the factory edge wears off. This is not the same as the knife going blunt. The factory edge is a polished bevel that's optimised for being shiny in a shop window, not for cutting a tomato. The knife will feel less "scary" by day four. It is not blunter; it has just become its true self.</li>
+        <li><strong>Week two to month six:</strong> the steel work-hardens at the cutting edge. This is good. A well-treated AUS-10 or VG-10 blade will hold a working edge for ten to fourteen weeks of brigade use without any intervention beyond a honing steel.</li>
+        <li><strong>Month six onwards:</strong> the bevel rolls. Microscopic deformations on the edge add up. The knife feels "okay" but lazy. <em>This is when most chefs phone us.</em> They are almost always six weeks too late.</li>
+        <li><strong>Year one to year three:</strong> if the knife has been honed properly, the only thing that needs doing is a stone re-profile — about forty minutes' work, £18 per knife.</li>
+        <li><strong>Year three to year ten:</strong> the bolster needs thinning. The handle may need replacing (especially Pakka and resin handles in dishwasher kitchens). The choil may need a slight re-grind.</li>
+      </ul>
+
+      <p>Most of the work we do is on knives that are between four and nine years old, owned by chefs who treat them well, and who would rather pay us £24 every six weeks than spend £400 every two years on a replacement.</p>
+
+      <figure class="pull-fig"><div class="wf-img" data-label="Tooling · Tormek + Japanese stones + microscope"></div><figcaption>The microscope is the most recent addition. It cost more than my first car. It pays for itself in about three weeks.</figcaption></figure>
+
+      <h2 id="s4"><span class="num">§ 04</span>The Bristol chefs who turned up</h2>
+
+      <p>The reason there's a thirty-eight-mile loop on our van's dashcam every Tuesday — Bridgnorth, Worcester, Cheltenham, Bath, Bristol, back — is that Bristol has, in the last decade, become <strong>the best food city in England that isn't London.</strong> I'm biased. So is everyone we collect from. Here's a partial list of who we collect from on Tuesdays:</p>
+
+      <ul>
+        <li>Box Hall — Hannah's team. Twelve knives, every six weeks.</li>
+        <li>Forge &amp; Crown — eight knives, every five weeks. (Their cleaver lives a hard life.)</li>
+        <li>Pasta Loco — six knives.</li>
+        <li>Casamia — confidential.</li>
+        <li>The Ethicurean — five knives, plus a wheel-sharpened set of butchery tools every quarter.</li>
+        <li>Bulrush, Bell's Diner, Marmo, Source, Wilson's, Birch — between four and ten knives each.</li>
+      </ul>
+
+      <p>We also sharpen for around forty home cooks who've found us through one of those chefs. We do not advertise. We have a website because Mei made me make one in 2019. Half the photos on it are wrong. I'll get round to it.</p>
+
+      <h2 id="s5"><span class="num">§ 05</span>What we'd tell a 26-year-old us</h2>
+
+      <p>If I could write a postcard to the version of me who was bent over Idris Owen's Sabatier in April 2009, this is what it would say:</p>
+
+      <ol>
+        <li>Buy the microscope earlier.</li>
+        <li>Charge enough that you can afford to do the job properly. The chefs you want will pay it. The ones who won't are not your customers.</li>
+        <li>When you say "no" to a commission order, you create the conditions to say "yes" to a chef who needs a knife sharpened the day before a wedding. That second yes is the better business.</li>
+        <li>Hire Mei in 2014, not 2016.</li>
+        <li>The roof. Just do the roof.</li>
+      </ol>
+
+      <hr>
+
+      <h2 id="s6"><span class="num">§ 06</span>What's next</h2>
+
+      <p>In 2026 we're doing three things differently. <strong>First</strong>, we're opening on Saturdays — by appointment, two slots a week, for chefs who can only escape on weekends. <strong>Second</strong>, we're teaching. Four Saturday workshops a year, four students each, £180 a head. You leave with a knife you've sharpened on a wheel, on a Tormek, and on three different stones — and an understanding of why your kitchen-drawer knife has felt wrong since 2018. <strong>Third</strong>, we're hiring. Slowly. A third pair of hands, ideally a former toolmaker, ideally someone who's tired of cities.</p>
+
+      <p>Other than that — Tuesdays in Bristol, Wednesdays at the wheel, the rest of the week answering emails, and the roof, finally, holding up.</p>
+
+      <p style="font-style: italic; color: var(--foundation-mid); margin-top: 36px; font-size: 16px;">— Lewis, May 2026.</p>
+
+    </article>
+
+    <!-- SIDEBAR -->
+    <aside class="aside">
+
+      <div class="side-card">
+        <h4>About this article</h4>
+        <div class="stat-row"><span class="small-l">Published</span><b>11 May 2026</b></div>
+        <div class="stat-row"><span class="small-l">Reading time</span><b>12 min</b></div>
+        <div class="stat-row"><span class="small-l">Word count</span><b>2,840</b></div>
+        <div class="stat-row"><span class="small-l">Category</span><b>Workshop</b></div>
+        <div class="stat-row"><span class="small-l">Tags</span><span style="text-align: right;">history · sharpening · bristol</span></div>
+      </div>
+
+      <div class="side-author">
+        <div class="row">
+          <div class="av"></div>
+          <div>
+            <b>Lewis Whitcombe</b><br><small>Founder · Severn Cut</small>
+          </div>
+        </div>
+        <p>Sharpens knives for 22 of the south west's best restaurants. Used to make brake-disc tooling for Caterpillar. Lives in Bridgnorth with a dog called Bevel.</p>
+        <a href="#">More from Lewis →</a>
+      </div>
+
+      <div class="side-card cta">
+        <h4>Need your knives sharpened?</h4>
+        <b>Bristol pickup runs every Tuesday.</b>
+        <p>Drop off at Box Hall before 10 am Monday — we collect at 11. £18–£24 per knife, no minimum, two-week turnaround.</p>
+        <a href="#">Book a pickup →</a>
+      </div>
+
+    </aside>
+
+  </div>
+</section>
+
+<!-- ═══════ RELATED ═══════ -->
+<section class="related">
+  <div class="related-in">
+    <h2>Keep reading</h2>
+    <div class="related-grid">
+      <a class="related-item" href="#">
+        <div class="wf-img" data-label="Steel grain"></div>
+        <div class="body">
+          <small>Materials · 8 min</small>
+          <h4>Why we don't use Damascus on a working knife.</h4>
+          <p>Most patterned steel is decorative. Some isn't. Here's how to tell the difference before you spend the money.</p>
+          <div class="meta"><span>March 2026</span><span>·</span><span>Lewis Whitcombe</span></div>
+        </div>
+      </a>
+      <a class="related-item" href="#">
+        <div class="wf-img" data-label="Honing rod"></div>
+        <div class="body">
+          <small>Technique · 6 min</small>
+          <h4>The 90-second honing routine that buys you another six weeks.</h4>
+          <p>Most chefs do this wrong. Here's the angle, the pressure, and the count we use ourselves.</p>
+          <div class="meta"><span>February 2026</span><span>·</span><span>Mei Lin</span></div>
+        </div>
+      </a>
+      <a class="related-item" href="#">
+        <div class="wf-img" data-label="Saturday workshop"></div>
+        <div class="body">
+          <small>Workshop · 4 min</small>
+          <h4>What you actually leave with after a Saturday workshop.</h4>
+          <p>The 2026 schedule, the four stones you'll use, and a worked example of someone who'd never sharpened a knife in their life.</p>
+          <div class="meta"><span>January 2026</span><span>·</span><span>Lewis Whitcombe</span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a class="brand" href="#"><span class="brand-mark">SC</span>Severn Cut</a>
+      <p>Sharpening · re-handling · forging. Bridgnorth, Shropshire. By appointment, Tuesday to Saturday.</p>
+    </div>
+    <div>
+      <h5>Work</h5>
+      <ul>
+        <li><a href="#">Sharpening</a></li>
+        <li><a href="#">Re-handling</a></li>
+        <li><a href="#">Custom builds</a></li>
+        <li><a href="#">Saturday workshops</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Visit</h5>
+      <ul>
+        <li><a href="#">Workshop hours</a></li>
+        <li><a href="#">Find us</a></li>
+        <li><a href="#">Bristol pickup runs</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Stories</h5>
+      <ul>
+        <li><a href="#">Workshop journal</a></li>
+        <li><a href="#">Case studies</a></li>
+        <li><a href="#">Newsletter</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Get in touch</h5>
+      <ul>
+        <li><a href="mailto:lewis@severncut.co">lewis@severncut.co</a></li>
+        <li><a href="tel:01746550221">01746 550 221</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="legal">
+    <span>© Severn Cut Ltd · Reg. England 09142231 · Bridgnorth WV16</span>
+    <span><a href="#" style="color: rgba(255,255,255,0.7); text-decoration: none;">Privacy</a> · <a href="#" style="color: rgba(255,255,255,0.7); text-decoration: none;">Cookies</a></span>
+  </div>
+</footer>
+
+<script>
+  // Reading progress bar
+  const bar = document.getElementById('progress');
+  function update() {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    bar.style.width = ((h.scrollTop || document.body.scrollTop) / max * 100) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+
+  // TOC active highlight
+  const links = document.querySelectorAll('.toc a');
+  const sections = [...document.querySelectorAll('.prose h2')];
+  function syncToc() {
+    const y = window.scrollY + 120;
+    let active = sections[0]?.id;
+    for (const s of sections) { if (s.offsetTop <= y) active = s.id; }
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + active));
+  }
+  window.addEventListener('scroll', syncToc, { passive: true });
+  syncToc();
+</script>
+
+</body>
+</html>

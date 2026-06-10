@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lens 3 · Marketing Tiles — Brightside</title>
+<style>
+/* —— Inlined from _shared/tokens.css for standalone use —— */
+/* Brightside fixture tokens — shared across lens comps.
+   Lens comps are wireframe-fidelity per Phase A scope. Visual polish is Phase B. */
+:root {
+  /* Foundation */
+  --f-white: #ffffff;
+  --f-wash:  #f7f5f1;
+  --f-pale:  #ebe7df;
+  --f-mid:   #8a8378;
+  --f-slate: #4a463f;
+  --f-dark:  #1c1a17;
+
+  /* Brightside brand */
+  --site-primary:    #0d7a70;   /* teal */
+  --site-primary-700:#085f57;
+  --site-cta:        #c2185b;   /* magenta */
+  --site-cta-700:    #99124a;
+
+  /* Module accent colours (for the dock — not lens chrome) */
+  --mod-voice:   #c2185b;
+  --mod-booking: #0d7a70;
+  --mod-reviews: #c2410c;
+  --mod-chatbot: #7c3aed;
+
+  /* Typography — Phase B Typography Mood Library will override these */
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-body:    'Inter', -apple-system, system-ui, sans-serif;
+
+  /* Spacing scale */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+  --s-9: 96px; --s-10: 128px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  color: var(--f-dark);
+  background: var(--f-white);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+/* Brightside content fixture is HARDCODED into each lens file —
+   this is wireframe-fidelity, not the production data-driven render. */
+
+/* Wireframe placeholder hatching */
+.wf-img {
+  background:
+    repeating-linear-gradient(45deg, var(--f-pale) 0 8px, var(--f-wash) 8px 16px);
+  border: 1px solid var(--f-pale);
+  position: relative;
+}
+.wf-img::after {
+  content: attr(data-label);
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--f-mid); font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* Banner showing the lens name + phase note */
+.lens-tag {
+  position: fixed; left: 16px; top: 16px; z-index: 200;
+  background: var(--f-dark); color: var(--f-white);
+  padding: 6px 12px; border-radius: 4px;
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 600;
+}
+.lens-tag b { color: #ffd166; font-weight: 600; }
+
+</style>
+<style>
+  .l3-nav {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--f-white);
+    border-bottom: 1px solid var(--f-pale);
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .l3-nav .brand { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+  .l3-nav nav { display: flex; gap: 28px; font-size: 14px; color: var(--f-slate); }
+  .l3-nav .cta { background: var(--site-cta); color: #fff; padding: 8px 16px; border-radius: 4px; font-size: 13.5px; font-weight: 600; text-decoration: none; }
+
+  /* Tiles take the above-fold — no traditional hero */
+  .l3-tiles-region {
+    max-width: 1400px; margin: 0 auto;
+    padding: 24px 24px 64px;
+  }
+  .l3-tiles-region .eyebrow {
+    text-align: center;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--site-cta); margin: 24px 0 12px;
+  }
+  .l3-tiles-region h1 {
+    text-align: center;
+    font-size: clamp(36px, 4.8vw, 60px);
+    margin: 0 auto 40px;
+    max-width: 18ch;
+  }
+  .l3-tiles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 180px;
+    gap: 16px;
+  }
+  .l3-tile {
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column;
+    padding: 24px;
+    cursor: pointer;
+    transition: transform 200ms var(--ease);
+  }
+  .l3-tile:hover { transform: translateY(-3px); }
+  .l3-tile h3 { font-size: 22px; line-height: 1.1; margin-bottom: 8px; }
+  .l3-tile p { font-size: 13.5px; margin: 0 0 auto; max-width: 26ch; }
+  .l3-tile .lnk {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600;
+    margin-top: 12px;
+    text-decoration: none;
+  }
+
+  /* Variants — true masonry with varied span */
+  .l3-tile--lg { grid-column: span 2; grid-row: span 2; }
+  .l3-tile--tall { grid-row: span 2; }
+  .l3-tile--wide { grid-column: span 2; }
+
+  /* Themed fills */
+  .l3-tile--photo .wf-img { position: absolute; inset: 0; z-index: 0; }
+  .l3-tile--photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.65) 100%); z-index: 1; }
+  .l3-tile--photo > * { position: relative; z-index: 2; color: #fff; }
+
+  .l3-tile--brand { background: var(--site-primary); color: #fff; }
+  .l3-tile--brand .lnk { color: #fff; }
+  .l3-tile--cta { background: var(--site-cta); color: #fff; }
+  .l3-tile--cta .lnk { color: #fff; }
+  .l3-tile--paper { background: var(--f-wash); color: var(--f-dark); border: 1px solid var(--f-pale); }
+  .l3-tile--paper .lnk { color: var(--site-primary); }
+  .l3-tile--dark { background: var(--f-dark); color: #fff; }
+  .l3-tile--dark .lnk { color: #ffd166; }
+
+  .l3-tile .price {
+    font-family: var(--font-display);
+    font-size: 36px; font-weight: 500;
+    line-height: 1;
+    margin-top: auto;
+  }
+  .l3-tile .price small { font-size: 13px; opacity: 0.7; font-family: var(--font-body); font-weight: 500; display: block; }
+
+  /* Pricing strip below */
+  .l3-pricing {
+    background: var(--f-wash);
+    padding: 80px 32px;
+  }
+  .l3-pricing-inner {
+    max-width: 1200px; margin: 0 auto;
+  }
+  .l3-pricing h2 { font-size: clamp(28px, 3.4vw, 40px); text-align: center; margin-bottom: 8px; }
+  .l3-pricing .sub { text-align: center; color: var(--f-slate); margin-bottom: 48px; }
+  .l3-pricing-table {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .l3-plan {
+    background: #fff; border: 1px solid var(--f-pale);
+    border-radius: 8px;
+    padding: 28px 24px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .l3-plan.is-featured { border: 2px solid var(--site-cta); position: relative; }
+  .l3-plan.is-featured::before { content: 'Most popular'; position: absolute; top: -10px; left: 24px; background: var(--site-cta); color: #fff; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .l3-plan h3 { font-size: 19px; }
+  .l3-plan .px { font-family: var(--font-display); font-size: 36px; line-height: 1; }
+  .l3-plan .px small { font-size: 14px; color: var(--f-mid); font-weight: 500; font-family: var(--font-body); }
+  .l3-plan ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--f-slate); }
+  .l3-plan li::before { content: '✓ '; color: var(--site-primary); font-weight: 700; }
+  .l3-plan .btn {
+    display: block; text-align: center;
+    padding: 11px; border-radius: 4px;
+    background: var(--f-dark); color: #fff;
+    text-decoration: none; font-weight: 600; font-size: 14px;
+    margin-top: auto;
+  }
+  .l3-plan.is-featured .btn { background: var(--site-cta); }
+
+  /* Testimonials band */
+  .l3-band {
+    padding: 80px 32px;
+    text-align: center;
+  }
+  .l3-band-inner { max-width: 900px; margin: 0 auto; }
+  .l3-band .stars { color: var(--mod-reviews); font-size: 22px; margin-bottom: 16px; }
+  .l3-band blockquote { font-family: var(--font-display); font-size: clamp(22px, 2.8vw, 32px); line-height: 1.3; margin: 0 0 16px; }
+  .l3-band cite { font-style: normal; color: var(--f-mid); font-size: 13.5px; }
+
+  /* Secondary CTA */
+  .l3-secondary-cta {
+    background: var(--site-primary); color: #fff;
+    padding: 64px 32px;
+    text-align: center;
+  }
+  .l3-secondary-cta h2 { font-size: clamp(26px, 3vw, 36px); margin-bottom: 12px; }
+  .l3-secondary-cta p { opacity: 0.85; margin: 0 0 24px; }
+  .l3-secondary-cta .btn { display: inline-block; background: #fff; color: var(--site-primary); padding: 13px 28px; border-radius: 4px; font-weight: 600; text-decoration: none; }
+
+  .l3-foot { padding: 32px; background: #0c0a09; color: #94908a; text-align: center; font-size: 13px; }
+
+  @media (max-width: 900px) {
+    .l3-tiles { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 160px; }
+    .l3-tile--lg { grid-column: span 2; }
+    .l3-tile--tall { grid-row: span 1; }
+    .l3-tile--wide { grid-column: span 2; }
+    .l3-pricing-table { grid-template-columns: 1fr; }
+    .l3-nav nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lens-tag">Lens 3 · Marketing Tiles <b>· Phase A wireframe</b></div>
+
+<header class="l3-nav">
+  <div class="brand">Brightside</div>
+  <nav><a href="#">Services</a><a href="#">Pricing</a><a href="#">Reviews</a><a href="#">Book</a></nav>
+  <a class="cta" href="#">Book now</a>
+</header>
+
+<section class="l3-tiles-region">
+  <div class="eyebrow">Brightside · Bristol</div>
+  <h1>Six reasons your dog deserves Brightside.</h1>
+  <div class="l3-tiles">
+
+    <div class="l3-tile l3-tile--lg l3-tile--photo">
+      <div class="wf-img" data-label="Hero tile photo · 800×600"></div>
+      <h3>One dog at a time. Zero kennels.</h3>
+      <p>Calm salon, single chair, full attention. The grooming experience anxious rescues actually tolerate.</p>
+      <a class="lnk" href="#">See our salon →</a>
+    </div>
+
+    <div class="l3-tile l3-tile--brand">
+      <h3>Full groom</h3>
+      <p>Bath, dry, scissor finish, nails.</p>
+      <div class="price">£68<small>medium dog · 90 min</small></div>
+    </div>
+
+    <div class="l3-tile l3-tile--paper">
+      <h3>Puppy first groom</h3>
+      <p>Gentle 45-min intro for pups 12–20 weeks.</p>
+      <div class="price">£38<small>fixed price</small></div>
+    </div>
+
+    <div class="l3-tile l3-tile--cta l3-tile--tall">
+      <h3>Save 15% on your 5th groom</h3>
+      <p>Loyalty pricing — automatic, no card needed.</p>
+      <a class="lnk" href="#">How it works →</a>
+    </div>
+
+    <div class="l3-tile l3-tile--dark">
+      <h3>Bath & tidy</h3>
+      <p>Quick £32 freshen-up between full grooms.</p>
+      <a class="lnk" href="#">Book a tidy →</a>
+    </div>
+
+    <div class="l3-tile l3-tile--paper l3-tile--wide">
+      <h3>Book online in 60 seconds.</h3>
+      <p>Live availability, instant confirmation, free reschedule up to 24h before.</p>
+      <a class="lnk" href="#">Check availability →</a>
+    </div>
+
+  </div>
+</section>
+
+<section class="l3-pricing">
+  <div class="l3-pricing-inner">
+    <h2>Three sizes. Honest pricing.</h2>
+    <p class="sub">Quoted prices are starting; thick or matted coats may add £8–15.</p>
+    <div class="l3-pricing-table">
+      <div class="l3-plan">
+        <h3>Small</h3>
+        <div class="px">£52<small> / 60 min</small></div>
+        <ul>
+          <li>Bath, hand-dry, trim</li>
+          <li>Nails &amp; pad tidy</li>
+          <li>Ear &amp; eye check</li>
+        </ul>
+        <a class="btn" href="#">Book small</a>
+      </div>
+      <div class="l3-plan is-featured">
+        <h3>Medium</h3>
+        <div class="px">£68<small> / 90 min</small></div>
+        <ul>
+          <li>Everything in Small</li>
+          <li>Breed-specific scissor work</li>
+          <li>Feathering &amp; trim</li>
+        </ul>
+        <a class="btn" href="#">Book medium</a>
+      </div>
+      <div class="l3-plan">
+        <h3>Large</h3>
+        <div class="px">£84<small> / 120 min</small></div>
+        <ul>
+          <li>Everything in Medium</li>
+          <li>Full blow-out</li>
+          <li>Extended finishing</li>
+        </ul>
+        <a class="btn" href="#">Book large</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="l3-band">
+  <div class="l3-band-inner">
+    <div class="stars">★★★★★</div>
+    <blockquote>"Em is the only groomer Milo doesn't shake the whole way home. Worth every penny."</blockquote>
+    <cite>Sarah Thompson · Cockapoo · Clifton · 4.7 stars from 47 reviews</cite>
+  </div>
+</section>
+
+<section class="l3-secondary-cta">
+  <h2>May & June diary is open.</h2>
+  <p>First-time dog? Email a photo and we'll quote before you book.</p>
+  <a class="btn" href="#">Book a slot</a>
+</section>
+
+<footer class="l3-foot">© 2026 Brightside · Cotham Hill, Bristol · +44 117 987 6543</footer>
+
+</body>
+</html>

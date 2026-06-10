@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modal System · Interactive Demo</title>
+<style>
+:root {
+  /* ── Modal system tokens (consumed by every modal) ── */
+  --m-bg: #ffffff;
+  --m-text: #14110d;
+  --m-mute: #6b6256;
+  --m-line: #e8e3da;
+  --m-radius: 12px;
+  --m-shadow: 0 24px 64px -12px rgba(20, 17, 13, 0.28), 0 8px 24px -8px rgba(20, 17, 13, 0.12);
+  --m-backdrop: rgba(20, 17, 13, 0.48);
+  --m-backdrop-blur: 6px;
+  --m-pad-x: 32px;
+  --m-pad-y: 28px;
+  --m-head-h: 64px;
+  --m-foot-h: 76px;
+  --m-anim-in: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  --m-anim-out: 160ms cubic-bezier(0.4, 0, 1, 1);
+
+  /* ── Brand surface (overridden per lens at runtime) ── */
+  --brand-primary: #2c3a2e;
+  --brand-cta: #b78c45;
+  --brand-cta-text: #ffffff;
+  --brand-accent: #c4391f;
+
+  /* ── Page chrome ── */
+  --bg: #f4f1ea;
+  --ink: #14110d;
+  --serif: ui-serif, Georgia, "Iowan Old Style", "Apple Garamond", serif;
+  --sans: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+
+/* ─────────────── Page chrome ─────────────── */
+.page-head {
+  border-bottom: 1px solid #d8d1c4;
+  padding: 32px 40px 24px;
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 40px;
+}
+.page-head .ttl { font-family: var(--serif); font-size: 36px; line-height: 1.05; font-weight: 500; letter-spacing: -0.01em; }
+.page-head .ttl small { display: block; font-family: var(--sans); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--m-mute); margin-bottom: 8px; font-weight: 500; }
+.page-head .meta { font-size: 13px; color: var(--m-mute); text-align: right; max-width: 280px; }
+.page-head .meta a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+.wrap { padding: 40px; max-width: 1280px; }
+
+.section-label {
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--m-mute); font-weight: 600; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-label::after { content: ""; flex: 1; height: 1px; background: #d8d1c4; }
+
+h2 { font-family: var(--serif); font-size: 26px; font-weight: 500; letter-spacing: -0.005em; margin-bottom: 24px; }
+
+/* ─────────────── Trigger panels ─────────────── */
+.panel {
+  background: #fff;
+  border: 1px solid #e8e3da;
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 32px;
+}
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; gap: 24px; }
+.panel-head h3 { font-family: var(--serif); font-size: 20px; font-weight: 500; }
+.panel-head p { font-size: 13px; color: var(--m-mute); max-width: 460px; text-align: right; }
+
+.grid-trig { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.grid-trig.gap-2 { grid-template-columns: repeat(2, 1fr); max-width: 600px; }
+.grid-trig.gap-3 { grid-template-columns: repeat(3, 1fr); }
+
+.trig {
+  border: 1px solid #e8e3da;
+  background: #faf7f0;
+  border-radius: 8px;
+  padding: 16px 14px;
+  font-family: var(--sans);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 120ms, background 120ms, transform 120ms;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.trig:hover { border-color: var(--brand-primary); background: #fff; transform: translateY(-1px); }
+.trig:active { transform: translateY(0); }
+.trig b { font-weight: 600; font-size: 14px; color: var(--ink); }
+.trig small { color: var(--m-mute); font-size: 11px; letter-spacing: 0.04em; }
+.trig .dim { font-family: var(--mono); font-size: 10px; color: var(--m-mute); margin-top: 6px; padding-top: 6px; border-top: 1px dashed #d8d1c4; }
+
+.brand-swatch {
+  display: inline-block; width: 12px; height: 12px; border-radius: 3px;
+  vertical-align: middle; margin-right: 6px; border: 1px solid rgba(0,0,0,0.08);
+}
+
+/* Brand toggle — bold lens-swatch chips */
+.brand-switch { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.brand-switch button {
+  padding: 0; border: 1px solid #d8d1c4; background: #fff;
+  border-radius: 10px; cursor: pointer;
+  font-family: var(--sans); text-align: left;
+  transition: border-color 120ms, transform 120ms, box-shadow 120ms;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+.brand-switch button .bs-strip {
+  height: 36px; display: flex; align-items: center; padding: 0 14px;
+  background: var(--bs-c, #2c3a2e); color: #fff;
+  font-family: var(--serif); font-size: 14px; font-weight: 500;
+  letter-spacing: -0.005em;
+  gap: 8px;
+}
+.brand-switch button .bs-strip::before {
+  content: ""; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--bs-cta, #b78c45); flex-shrink: 0;
+  box-shadow: 0 0 0 1.5px rgba(255,255,255,0.4);
+}
+.brand-switch button .bs-meta {
+  padding: 8px 14px 10px;
+  font-size: 11px; letter-spacing: 0.04em; color: var(--m-mute);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.brand-switch button .bs-meta b { color: var(--ink); font-size: 12px; font-weight: 600; letter-spacing: 0; }
+.brand-switch button .bs-meta .check {
+  width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #d8d1c4;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; color: transparent;
+  transition: all 120ms;
+}
+.brand-switch button:hover { border-color: var(--bs-c); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(20,17,13,0.06); }
+.brand-switch button.is-on { border-color: var(--bs-c); box-shadow: 0 0 0 2px var(--bs-c); }
+.brand-switch button.is-on .bs-meta .check { background: var(--bs-c); border-color: var(--bs-c); color: #fff; }
+
+/* ─────────────── MODAL SYSTEM ─────────────── */
+.m-backdrop {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--m-backdrop);
+  backdrop-filter: blur(var(--m-backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--m-backdrop-blur));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--m-anim-out), visibility 0s linear var(--m-anim-out);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.m-backdrop.is-open { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity var(--m-anim-in), visibility 0s linear 0s; }
+
+.m {
+  background: var(--m-bg);
+  color: var(--m-text);
+  border-radius: var(--m-radius);
+  box-shadow: var(--m-shadow);
+  width: 100%;
+  max-height: calc(100vh - 48px);
+  display: flex; flex-direction: column;
+  transform: scale(0.96) translateY(8px);
+  opacity: 0;
+  transition: transform var(--m-anim-out), opacity var(--m-anim-out);
+  overflow: hidden;
+}
+.m-backdrop.is-open .m { transform: scale(1) translateY(0); opacity: 1; transition: transform var(--m-anim-in), opacity var(--m-anim-in); }
+
+/* Sizes */
+.m.is-s  { max-width: 480px; }
+.m.is-m  { max-width: 720px; }
+.m.is-l  { max-width: 960px; }
+.m.is-xl { max-width: 1140px; }
+
+/* Anatomy: head / body / foot */
+.m-head {
+  height: var(--m-head-h);
+  padding: 0 var(--m-pad-x);
+  border-bottom: 1px solid var(--m-line);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.m-head .ttl {
+  font-family: var(--serif); font-size: 20px; font-weight: 500; line-height: 1.2;
+  letter-spacing: -0.005em;
+  display: flex; flex-direction: column;
+}
+.m-head .ttl small {
+  font-family: var(--sans); font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--m-mute); font-weight: 500; margin-bottom: 2px;
+}
+.m-close {
+  width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--m-line);
+  background: transparent; cursor: pointer; color: var(--m-text);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 120ms, border-color 120ms;
+  font-size: 16px;
+}
+.m-close:hover { background: #f4f1ea; border-color: #c4bca8; }
+
+.m-body {
+  padding: var(--m-pad-y) var(--m-pad-x);
+  overflow-y: auto;
+  flex: 1;
+}
+.m-body p { margin-bottom: 14px; }
+.m-body p:last-child { margin-bottom: 0; }
+.m-body h4 { font-family: var(--serif); font-size: 16px; font-weight: 500; margin-bottom: 10px; }
+
+.m-foot {
+  height: var(--m-foot-h);
+  padding: 0 var(--m-pad-x);
+  border-top: 1px solid var(--m-line);
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+  flex-shrink: 0;
+  background: #fbfaf6;
+}
+
+.m-btn {
+  height: 44px; padding: 0 22px;
+  font-family: var(--sans); font-size: 14px; font-weight: 500;
+  border-radius: 8px; cursor: pointer; border: 1px solid transparent;
+  transition: background 120ms, border-color 120ms, transform 80ms;
+}
+.m-btn:active { transform: translateY(1px); }
+.m-btn--primary { background: var(--brand-cta); color: var(--brand-cta-text); }
+.m-btn--primary:hover { filter: brightness(1.08); }
+.m-btn--ghost { background: transparent; color: var(--m-text); border-color: var(--m-line); }
+.m-btn--ghost:hover { background: #f4f1ea; }
+
+/* Content patterns inside body */
+.m-fact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px 0; border-top: 1px solid var(--m-line); }
+.m-fact-row:first-of-type { border-top: 0; padding-top: 0; }
+.m-fact-row > div small { display: block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--m-mute); margin-bottom: 4px; }
+.m-fact-row > div b { font-family: var(--serif); font-size: 17px; font-weight: 500; }
+
+.m-img {
+  background: linear-gradient(135deg, #b3a989 0%, #6b6256 100%);
+  border-radius: 8px; aspect-ratio: 16/10;
+  display: flex; align-items: flex-end; padding: 18px;
+  color: rgba(255,255,255,0.78); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.m-form { display: grid; gap: 14px; }
+.m-form label { display: block; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--m-mute); font-weight: 600; margin-bottom: 6px; }
+.m-form input, .m-form select, .m-form textarea {
+  width: 100%; height: 44px; padding: 0 14px;
+  border: 1px solid var(--m-line); border-radius: 8px;
+  font-family: var(--sans); font-size: 14px; color: var(--m-text);
+  background: #fbfaf6;
+  transition: border-color 120ms, background 120ms;
+}
+.m-form textarea { height: 100px; padding: 12px 14px; resize: vertical; }
+.m-form input:focus, .m-form select:focus, .m-form textarea:focus {
+  outline: none; border-color: var(--brand-primary); background: #fff;
+}
+
+.m-allergen { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; border: 1px solid var(--m-line); color: var(--m-mute); margin-right: 4px; }
+
+.m-stars { color: var(--brand-cta); letter-spacing: 0.06em; }
+
+/* ─── Lightbox-style L modal (image-led) ─── */
+.m--lightbox .m-body { padding: 0; background: #14110d; }
+.m--lightbox .m-img-full {
+  background: linear-gradient(135deg, #6b6256 0%, #14110d 100%);
+  aspect-ratio: 4/3; width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.4); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.m--lightbox .m-cap { padding: 18px 24px; background: #fff; }
+.m--lightbox .m-cap b { font-family: var(--serif); font-size: 16px; font-weight: 500; }
+.m--lightbox .m-cap p { font-size: 13px; color: var(--m-mute); margin-top: 4px; }
+
+/* ─── Mobile (bottom sheet) demo wrapper ─── */
+.m-backdrop.is-sheet { align-items: flex-end; padding: 0; }
+.m-backdrop.is-sheet .m {
+  max-width: 100%; max-height: 90vh;
+  border-radius: 18px 18px 0 0;
+  transform: translateY(24px);
+}
+.m-backdrop.is-sheet.is-open .m { transform: translateY(0); }
+.m-sheet-grab {
+  height: 24px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.m-sheet-grab::before {
+  content: ""; width: 36px; height: 4px; border-radius: 2px; background: #d8d1c4;
+}
+
+/* ─── Mobile preview iframe ─── */
+.mobile-preview {
+  width: 375px; height: 640px;
+  border: 1px solid #d8d1c4; border-radius: 28px;
+  background: #fbfaf6;
+  margin: 0 auto;
+  position: relative; overflow: hidden;
+  box-shadow: 0 12px 32px rgba(20,17,13,0.1);
+}
+.mobile-preview::before {
+  content: ""; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  width: 100px; height: 24px; background: #14110d; border-radius: 12px; z-index: 2;
+}
+.mp-bg { position: absolute; inset: 0; padding: 56px 16px 16px; background: #f4f1ea; overflow: hidden; }
+.mp-bg .b1 { height: 24px; background: #d8d1c4; border-radius: 4px; margin-bottom: 8px; }
+.mp-bg .b2 { height: 12px; background: #d8d1c4; border-radius: 4px; width: 60%; opacity: 0.6; margin-bottom: 24px; }
+.mp-bg .b3 { height: 160px; background: #b3a989; border-radius: 8px; margin-bottom: 16px; }
+.mp-bg .b4 { height: 12px; background: #d8d1c4; border-radius: 4px; margin-bottom: 6px; }
+.mp-bg .b4.short { width: 70%; }
+
+.mp-sheet {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: #fff; border-radius: 18px 18px 0 0;
+  padding: 0 0 20px;
+  max-height: 70%;
+  transform: translateY(100%);
+  transition: transform var(--m-anim-out);
+  display: flex; flex-direction: column;
+  box-shadow: 0 -8px 24px rgba(20,17,13,0.16);
+}
+.mobile-preview.is-open .mp-sheet { transform: translateY(0); transition: transform var(--m-anim-in); }
+.mp-sheet-grab { padding: 10px 0; display: flex; justify-content: center; flex-shrink: 0; }
+.mp-sheet-grab::before { content: ""; width: 36px; height: 4px; background: #d8d1c4; border-radius: 2px; }
+.mp-sheet-head { padding: 8px 20px 14px; border-bottom: 1px solid var(--m-line); display: flex; justify-content: space-between; align-items: center; }
+.mp-sheet-head b { font-family: var(--serif); font-size: 16px; font-weight: 500; }
+.mp-sheet-head .x { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--m-line); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; }
+.mp-sheet-body { padding: 16px 20px; overflow-y: auto; font-size: 12px; line-height: 1.5; flex: 1; }
+.mp-sheet-foot { padding: 12px 20px 0; border-top: 1px solid var(--m-line); }
+.mp-sheet-foot .cta { width: 100%; height: 42px; background: var(--brand-cta); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; }
+
+.mobile-preview-trig { display: flex; gap: 12px; margin-top: 16px; justify-content: center; }
+.mobile-preview-trig button { padding: 8px 16px; font-size: 12px; border: 1px solid #d8d1c4; background: #fff; border-radius: 999px; cursor: pointer; }
+
+/* ─── A11y / focus ─── */
+.m-btn:focus-visible, .m-close:focus-visible, .trig:focus-visible, .brand-switch button:focus-visible {
+  outline: 2px solid var(--brand-primary); outline-offset: 2px;
+}
+.m-form input:focus-visible, .m-form select:focus-visible, .m-form textarea:focus-visible {
+  outline: 2px solid var(--brand-primary); outline-offset: 1px;
+}
+
+/* sr only */
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.notes {
+  background: #2c2a24; color: #c4bca8; border-radius: 12px;
+  padding: 28px 32px; font-size: 13px; line-height: 1.65;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+}
+.notes h3 { font-family: var(--serif); font-size: 16px; font-weight: 500; color: #fff; margin-bottom: 12px; letter-spacing: -0.005em; }
+.notes ul { list-style: none; padding: 0; }
+.notes li { padding: 4px 0; padding-left: 18px; position: relative; }
+.notes li::before { content: "→"; position: absolute; left: 0; color: #b78c45; font-weight: 700; }
+.notes code { font-family: var(--mono); font-size: 12px; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; color: #fbfaf6; }
+
+@media (max-width: 768px) {
+  .grid-trig, .grid-trig.gap-3, .grid-trig.gap-2 { grid-template-columns: 1fr; }
+  .notes { grid-template-columns: 1fr; }
+  .page-head { flex-direction: column; align-items: flex-start; }
+  .page-head .meta { text-align: left; }
+  .m { max-width: 100% !important; max-height: 90vh; border-radius: 18px 18px 0 0; align-self: flex-end; }
+  .m-backdrop { align-items: flex-end; padding: 0; }
+}
+</style>
+</head>
+<body>
+
+<header class="page-head" data-screen-label="Modal demo — page head">
+  <div class="ttl">
+    <small>Deliverable 1 · Pattern B</small>
+    Modal system — interactive demo
+  </div>
+  <div class="meta">
+    Click any trigger to open the variant. ESC, backdrop click, and close button all dismiss.<br>
+    Companion: <a href="modal-reference.html">all-states static reference →</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ════ BRAND INHERITANCE SWITCH ════ -->
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Brand inheritance</h3>
+      <p>The modal shell is brand-agnostic. Switch lenses to see brand tokens (<code style="font-family: ui-monospace, monospace;">--brand-primary</code>, <code style="font-family: ui-monospace, monospace;">--brand-cta</code>) cascade in without changing markup.</p>
+    </div>
+    <div class="brand-switch">
+      <button class="is-on" data-brand="forge" style="--bs-c: #2c3a2e; --bs-cta: #b78c45;">
+        <div class="bs-strip">The Forge &amp; Crown</div>
+        <div class="bs-meta"><b>Lens 1 · Editorial</b><span class="check">✓</span></div>
+      </button>
+      <button data-brand="beardmore" style="--bs-c: #2b1410; --bs-cta: #d4a045;">
+        <div class="bs-strip">Beardmore &amp; Co.</div>
+        <div class="bs-meta"><b>Lens 6 · Shop</b><span class="check">✓</span></div>
+      </button>
+      <button data-brand="severn" style="--bs-c: #1a1a1a; --bs-cta: #c4391f;">
+        <div class="bs-strip">Severn Cut</div>
+        <div class="bs-meta"><b>Lens 8 · Quote</b><span class="check">✓</span></div>
+      </button>
+      <button data-brand="hartcliffe" style="--bs-c: #1a3a52; --bs-cta: #c4391f;">
+        <div class="bs-strip">Hartcliffe &amp; Crew</div>
+        <div class="bs-meta"><b>Lens 9 · Directory</b><span class="check">✓</span></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ════ SIZE VARIANTS ════ -->
+  <div class="section-label">Size variants</div>
+  <div class="panel">
+    <div class="panel-head">
+      <h3>S · M · L · XL</h3>
+      <p>Four widths cover every drill-down. Use the smallest that fits the content.</p>
+    </div>
+    <div class="grid-trig">
+      <button class="trig" data-open="s">
+        <b>S — Compact</b>
+        <small>Confirm · expand testimonial</small>
+        <span class="dim">max-width 480px</span>
+      </button>
+      <button class="trig" data-open="m">
+        <b>M — Default</b>
+        <small>Item detail · enquiry form</small>
+        <span class="dim">max-width 720px</span>
+      </button>
+      <button class="trig" data-open="l">
+        <b>L — Wide</b>
+        <small>Product quick-view · lightbox</small>
+        <span class="dim">max-width 960px</span>
+      </button>
+      <button class="trig" data-open="xl">
+        <b>XL — Showcase</b>
+        <small>Case study · large gallery</small>
+        <span class="dim">max-width 1140px</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ════ CONTENT PATTERNS ════ -->
+  <div class="section-label">Content patterns</div>
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Six patterns the same shell carries</h3>
+      <p>Header / body / footer is fixed; what fills the body varies. These are the six recurring drill-downs across the 9 lenses.</p>
+    </div>
+    <div class="grid-trig grid-trig">
+      <button class="trig" data-open="enquiry">
+        <b>Enquiry form</b>
+        <small>Triggered from any CTA</small>
+        <span class="dim">M · 720</span>
+      </button>
+      <button class="trig" data-open="menuitem">
+        <b>Menu item</b>
+        <small>Lens 7 · allergens + dietary</small>
+        <span class="dim">M · 720</span>
+      </button>
+      <button class="trig" data-open="product">
+        <b>Product quick-view</b>
+        <small>Lens 6 · image + buy CTA</small>
+        <span class="dim">L · 960</span>
+      </button>
+      <button class="trig" data-open="lightbox">
+        <b>Image lightbox</b>
+        <small>Lens 2 / 4 · gallery</small>
+        <span class="dim">L · 960</span>
+      </button>
+      <button class="trig" data-open="testimonial">
+        <b>Testimonial expand</b>
+        <small>Lens 5 · long quote</small>
+        <span class="dim">S · 480</span>
+      </button>
+      <button class="trig" data-open="casestudy">
+        <b>Case study</b>
+        <small>Lens 8 · spec + photos</small>
+        <span class="dim">XL · 1140</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ════ MOBILE BOTTOM SHEET ════ -->
+  <div class="section-label">Mobile reflow — bottom sheet</div>
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Below 768px, modals become bottom sheets</h3>
+      <p>Same anatomy — head / body / foot — slides up from the bottom with a grab handle. 90vh max, full width.</p>
+    </div>
+    <div class="mobile-preview" id="mp">
+      <div class="mp-bg">
+        <div class="b1"></div>
+        <div class="b2"></div>
+        <div class="b3"></div>
+        <div class="b4"></div>
+        <div class="b4 short"></div>
+        <div class="b4"></div>
+        <div class="b4 short"></div>
+      </div>
+      <div class="mp-sheet">
+        <div class="mp-sheet-grab"></div>
+        <div class="mp-sheet-head">
+          <b>Bavette steak frites</b>
+          <div class="x" onclick="document.getElementById('mp').classList.remove('is-open')">✕</div>
+        </div>
+        <div class="mp-sheet-body">
+          <p style="margin-bottom: 10px;">30-day aged bavette over the fire, hand-cut chips, peppercorn sauce, watercress.</p>
+          <div style="margin-bottom: 14px;">
+            <span class="m-allergen">GF</span>
+            <span class="m-allergen">N-free</span>
+            <span class="m-allergen">Contains: dairy</span>
+          </div>
+          <p style="color: var(--m-mute); font-size: 11px;">From Hop Pole Farm, Bromsgrove. Sauce made with chicken jus and three peppers.</p>
+        </div>
+        <div class="mp-sheet-foot">
+          <button class="cta">Reserve a table to order — £24</button>
+        </div>
+      </div>
+    </div>
+    <div class="mobile-preview-trig">
+      <button onclick="document.getElementById('mp').classList.add('is-open')">Show sheet</button>
+      <button onclick="document.getElementById('mp').classList.remove('is-open')">Dismiss</button>
+    </div>
+  </div>
+
+  <!-- ════ BEHAVIOUR NOTES ════ -->
+  <div class="notes">
+    <div>
+      <h3>Dismiss affordances</h3>
+      <ul>
+        <li><b>ESC key</b> — closes top-most modal (stack-aware)</li>
+        <li><b>Backdrop click</b> — closes, except for forms with dirty state (confirm first)</li>
+        <li><b>Close button</b> — always top-right of header, 36×36 hit target</li>
+        <li><b>Programmatic</b> — <code>window.UXMC.modal.close()</code> for Claude Code wiring</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Focus management (WCAG AA)</h3>
+      <ul>
+        <li>On open: <b>focus first focusable</b> element inside modal (input, or close X if none)</li>
+        <li>Tab cycles <b>inside</b> the modal only (focus trap)</li>
+        <li>On close: returns focus to the <b>triggering element</b></li>
+        <li><code>aria-modal="true"</code> + <code>role="dialog"</code> + <code>aria-labelledby</code> on every modal</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Animation timing</h3>
+      <ul>
+        <li>Backdrop fade-in: <b>220ms</b> · easing <code>cubic-bezier(0.16, 1, 0.3, 1)</code></li>
+        <li>Modal scale 0.96→1 + fade-in: <b>220ms</b> · same easing</li>
+        <li>Dismiss reverses at <b>160ms</b> · <code>cubic-bezier(0.4, 0, 1, 1)</code></li>
+        <li>Mobile sheet translate Y(100%→0): same timing curves</li>
+        <li><code>prefers-reduced-motion</code> → drop scale, keep fade</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Tokens (locked)</h3>
+      <ul>
+        <li><code>--m-bg</code> · <code>--m-text</code> · <code>--m-mute</code> · <code>--m-line</code></li>
+        <li><code>--m-radius: 12px</code> · <code>--m-shadow</code> two-layer offset+ambient</li>
+        <li><code>--m-backdrop</code> rgba dark + <code>backdrop-filter: blur(6px)</code></li>
+        <li><code>--m-pad-x: 32</code> · <code>--m-pad-y: 28</code> · <code>--m-head-h: 64</code> · <code>--m-foot-h: 76</code></li>
+        <li>Brand-driven: <code>--brand-primary</code> · <code>--brand-cta</code> · <code>--brand-cta-text</code></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═════════════════════ MODAL INSTANCES ═════════════════════ -->
+
+<!-- S: Confirm -->
+<div class="m-backdrop" id="modal-s" role="dialog" aria-modal="true" aria-labelledby="m-s-ttl">
+  <div class="m is-s">
+    <div class="m-head">
+      <div class="ttl"><small>Size · S — 480px</small><span id="m-s-ttl">Confirm enquiry</span></div>
+      <button class="m-close" data-close>✕</button>
+    </div>
+    <div class="m-body">
+      <p>We'll reply within one working day. Your details are stored in our CRM and used only for this enquiry.</p>
+      <p style="font-size:12px;color:var(--m-mute);">By submitting you accept our <a href="#" style="color:inherit;">privacy policy</a>.</p>
+    </div>
+    <div class="m-foot">
+      <button class="m-btn m-btn--ghost" data-close>Cancel</button>
+      <button class="m-btn m-btn--primary">Send enquiry</button>
+    </div>
+  </div>
+</div>
+
+<!-- M: Default -->
+<div class="m-backdrop" id="modal-m" role="dialog" aria-modal="true" aria-labelledby="m-m-ttl">
+  <div class="m is-m">
+    <div class="m-head">
+      <div class="ttl"><small>Size · M — 720px</small><span id="m-m-ttl">Get in touch</span></div>
+      <button class="m-close" data-close>✕</button>
+    </div>
+    <div class="m-body">
+      <p style="color:var(--m-mute);font-size:14px;margin-bottom:18px;">We'll be in touch within one working day — same-day if before 3pm.</p>
+      <div class="m-form">
+        <div><label>Name</label><input type="text" placeholder="Jane Atkins" autofocus></div>
+        <div><label>Email</label><input type="email" placeholder="jane@example.co.uk"></div>
+        <div><label>What can we help with?</label><textarea placeholder="A few lines about your project…"></textarea></div>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="m-btn m-btn--ghost" data-close>Cancel</button>
+      <button class="m-btn m-btn--primary">Send →</button>
+    </div>
+  </div>
+</div>
+
+<!-- L: Wide -->
+<div class="m-backdrop" id="modal-l" role="dialog" aria-modal="true" aria-labelledby="m-l-ttl">
+  <div class="m is-l">
+    <div class="m-head">
+      <div class="ttl"><small>Size · L — 960px</small><span id="m-l-ttl">Wide modal</span></div>
+      <button class="m-close" data-close>✕</button>
+    </div>
+    <div class="m-body">
+      <div class="m-img">hero · 16:10 · placeholder</div>
+      <p>The L size is for image-led drill-downs: product quick-views, lightboxes, project pages. Body content can run two-column at this width.</p>
+    </div>
+    <div class="m-foot">
+      <button class="m-btn m-btn--ghost" data-close>Close</button>
+      <button class="m-btn m-btn--primary">Primary action</button>
+    </div>
+  </div>
+</div>
+
+<!-- XL: Showcase -->
+<div class="m-backdrop" id="modal-xl" role="dialog" aria-modal="true" aria-labelledby="m-xl-ttl">
+  <div class="m is-xl">
+    <div class="m-head">
+      <div class="ttl"><small>Size · XL — 1140px</small><span id="m-xl-ttl">Case study showcase</span></div>
+      <button class="m-close" data-close>✕</button>
+    </div>
+    <div class="m-body">
+      <div class="m-img" style="aspect-ratio: 21/9;">case study hero · 21:9</div>
+      <h4>The shape</h4>
+      <p>XL is reserved for case studies, large galleries, and project deep-dives where the content genuinely warrants the width. Most drill-downs should use M or L — XL signals "this is substantial".</p>
+      <p>If the case study is long enough to benefit from its own URL (SEO, sharing), upgrade to <b>Internal Template A — Item Detail</b> instead of XL.</p>
+    </div>
+    <div class="m-foot">
+      <button class="m-btn m-btn--ghost" data-close>Close</button>
+      <button class="m-btn m-btn--primary">View full case study</button>
+    </div>
+  </div>
+</div>
+
+<!-- Enquiry -->
+<div class="m-backdrop" id="modal-enquiry" role="dialog" aria-modal="true" aria-labelledby="m-enq-ttl">
+  <div class="m is-m">
+    <div class="m-head">
+      <div class="ttl"><small>Content pattern · enquiry</small><span id="m-enq-ttl">Tell us about your project</span></div>
+      <button class="m-close" data-close>✕</button>
+    </div>
+    <div class="m-body">
+      <p style="color:var(--m-mute);font-size:14px;margin-bottom:20px;">Used from any "Get in touch" CTA. Drops to CRM as a priority lead, owner emailed on submit.</p>
+      <div class="m-form">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div><label>Name</label><input type="text"></div>
+          <div><label>Company (optional)</label><input type="text"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div><label>Email</label><input type="email"></div>
+          <div><label>Phone</label><input type="tel"></div>
+        </div>
+        <div><label>What can we help with?</label><textarea placeholder="A short brief — what, when, where…"></textarea></div>
+        <div><label>How did you hear about us?</label>
+          <select>
+            <option>— Choose —</option><option>Google search</option><option>Recommendation</option><option>Social media</option><option>Walked past</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="m-btn m-btn--ghost" data-close>Cancel</button>
+      <button class="m-btn m-btn--primary">Send enquiry →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Menu item (Lens 7) -->
+<div class="m-backdrop" id="modal-menuitem" role="dialog" aria-modal="true" aria-labelledby="m-mi-ttl">
+  <div class="m is-m">
+    <div class="m-head">
+      <div class="ttl"><small>Lens 7 · menu item</small><span id="m-mi-ttl">Bavette steak frites</span></div>
+      <button class="m-close" data-close>✕</button>
+    </div>
+    <div class="m-body">
+      <div class="m-img" style="aspect-ratio:16/9;">plated · over the fire</div>
+      <p style="font-family:var(--serif);font-size:17px;line-height:1.4;margin-bottom:18px;">30-day aged bavette over the fire, hand-cut chips, peppercorn sauce, watercress.</p>
+      <div style="margin-bottom:18px;">
+        <span class="m-allergen">GF</span>
+        <span class="m-allergen">N-free</span>
+        <span class="m-allergen">Contains: dairy</span>
+        <span class="m-allergen">Contains: mustard</span>
+      </div>
+      <h4>Sourcing</h4>
+      <p style="font-size:13px;color:var(--m-mute);">Bavette from Hop Pole Farm, Bromsgrove — pasture-raised, dry-aged on the bone. Chips: Maris Piper, twice-cooked in beef dripping. Sauce made daily with chicken jus and three peppers.</p>
+    </div>
+    <div class="m-foot">
+      <div style="margin-right:auto;font-family:var(--serif);font-size:22px;font-weight:500;">£24</div>
+      <button class="m-btn m-btn--ghost" data-close>Close</button>
+      <button class="m-btn m-btn--primary">Reserve to order →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Product (Lens 6) -->
+<div class="m-backdrop" id="modal-product" role="dialog" aria-modal="true" aria-labelledby="m-prod-ttl">
+  <div class="m is-l">
+    <div class="m-head">
+      <div class="ttl"><small>Lens 6 · product quick-view</small><span id="m-prod-ttl">Sandalwood &amp; Bay shaving soap</span></div>
+      <button class="m-close" data-close>✕</button>
+    </div>
+    <div class="m-body" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;">
+      <div class="m-img" style="aspect-ratio:1;margin:0;">product · square</div>
+      <div>
+        <div class="m-stars" style="font-size:14px;margin-bottom:6px;">★★★★★ <span style="color:var(--m-mute);font-weight:400;">· 84 reviews</span></div>
+        <h4 style="font-family:var(--serif);font-size:22px;font-weight:500;margin-bottom:8px;">£14 <span style="font-size:14px;color:var(--m-mute);text-decoration:line-through;font-weight:400;">£18</span></h4>
+        <p style="font-size:13px;color:var(--m-mute);margin-bottom:16px;">Tallow-based shaving soap — sandalwood, bay leaf, a whisper of cedar. Lathers like a dream.</p>
+        <div style="border-top:1px solid var(--m-line);padding-top:14px;margin-bottom:16px;">
+          <small style="display:block;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--m-mute);margin-bottom:6px;">Size</small>
+          <div style="display:flex;gap:8px;"><button class="m-btn m-btn--ghost" style="height:40px;">100g</button><button class="m-btn m-btn--primary" style="height:40px;">200g · £14</button></div>
+        </div>
+        <p style="font-size:12px;color:var(--m-mute);">In stock · Free UK shipping over £25 · Reviews module wired</p>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="m-btn m-btn--ghost" data-close>Continue browsing</button>
+      <button class="m-btn m-btn--primary">Add to bag →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="m-backdrop" id="modal-lightbox" role="dialog" aria-modal="true" aria-labelledby="m-lb-ttl">
+  <div class="m is-l m--lightbox">
+    <div class="m-head">
+      <div class="ttl"><small>Lens 2 / 4 · gallery lightbox</small><span id="m-lb-ttl">Brockwell House extension · 04</span></div>
+      <button class="m-close" data-close>✕</button>
+    </div>
+    <div class="m-body">
+      <div class="m-img-full">gallery · 4:3 · interior detail</div>
+    </div>
+    <div class="m-cap">
+      <b>The rear glazing was hand-glazed on site</b>
+      <p>10mm low-iron units, structural silicone, no visible framing. Photographed at golden hour, October 2024.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Testimonial expand -->
+<div class="m-backdrop" id="modal-testimonial" role="dialog" aria-modal="true" aria-labelledby="m-t-ttl">
+  <div class="m is-s">
+    <div class="m-head">
+      <div class="ttl"><small>Lens 5 · testimonial</small><span id="m-t-ttl">Hannah M., Bristol</span></div>
+      <button class="m-close" data-close>✕</button>
+    </div>
+    <div class="m-body">
+      <div class="m-stars" style="font-size:18px;margin-bottom:14px;">★★★★★</div>
+      <p style="font-family:var(--serif);font-size:18px;line-height:1.5;letter-spacing:-0.005em;">"They came out at 11pm on a Sunday when the boiler went on the blink. Fixed it in 40 minutes, charged me the weekday rate, even put the kettle on. The kind of people you tell your neighbours about."</p>
+      <p style="font-size:12px;color:var(--m-mute);margin-top:16px;">— February 2026 · verified via Trustpilot</p>
+    </div>
+  </div>
+</div>
+
+<!-- Case study XL -->
+<div class="m-backdrop" id="modal-casestudy" role="dialog" aria-modal="true" aria-labelledby="m-cs-ttl">
+  <div class="m is-xl">
+    <div class="m-head">
+      <div class="ttl"><small>Lens 8 · case study</small><span id="m-cs-ttl">Wayfinding signage · Ironbridge Gorge Museums</span></div>
+      <button class="m-close" data-close>✕</button>
+    </div>
+    <div class="m-body">
+      <div class="m-img" style="aspect-ratio: 21/9;margin-bottom:24px;">case study hero · 21:9</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:32px;">
+        <div>
+          <h4>The brief</h4>
+          <p>Replace 24 wayfinding panels across 7 museum sites with weather-resistant signage that holds up to the Severn valley climate. Budget pressure: ~30% under previous supplier. Lead time: 8 weeks.</p>
+          <h4 style="margin-top:18px;">What we did</h4>
+          <p>3mm Dibond aluminium composite, CNC-routed and UV-printed in our Bridgnorth workshop. Subsurface-mounted to existing posts using bespoke brackets we fabricated in-house. Each panel pre-positioned and dry-fit before final install.</p>
+          <h4 style="margin-top:18px;">The outcome</h4>
+          <p>All 24 panels installed across two install weekends. 24-month UV warranty. Museum reports zero damage 14 months in despite a brutal winter.</p>
+        </div>
+        <div>
+          <div class="m-fact-row" style="display:block;padding-top:0;border-top:0;">
+            <div style="margin-bottom:14px;"><small>Client</small><b>Ironbridge Gorge Museums</b></div>
+            <div style="margin-bottom:14px;"><small>Materials</small><b>3mm Dibond · UV ink</b></div>
+            <div style="margin-bottom:14px;"><small>Lead time</small><b>7 weeks (1 wk under)</b></div>
+            <div style="margin-bottom:14px;"><small>Value</small><b>£18,400 ex VAT</b></div>
+            <div><small>Sign-off</small><b>October 2024</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="m-btn m-btn--ghost" data-close>Close</button>
+      <button class="m-btn m-btn--primary">Start a similar project →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Modal open/close engine ──
+const openModal = (id) => {
+  const m = document.getElementById(id);
+  if (!m) return;
+  m.classList.add('is-open');
+  m._trigger = document.activeElement;
+  document.body.style.overflow = 'hidden';
+  // focus first focusable
+  setTimeout(() => {
+    const focusables = m.querySelectorAll('input, select, textarea, button, [tabindex]:not([tabindex="-1"])');
+    const first = [...focusables].find(el => !el.hasAttribute('data-close')) || focusables[0];
+    if (first) first.focus();
+  }, 50);
+};
+const closeModal = (m) => {
+  m.classList.remove('is-open');
+  document.body.style.overflow = '';
+  if (m._trigger) m._trigger.focus();
+};
+const closeTop = () => {
+  const open = [...document.querySelectorAll('.m-backdrop.is-open')];
+  if (open.length) closeModal(open[open.length - 1]);
+};
+
+document.querySelectorAll('.trig[data-open]').forEach(t => {
+  t.addEventListener('click', () => openModal('modal-' + t.dataset.open));
+});
+document.querySelectorAll('.m-backdrop').forEach(bd => {
+  bd.addEventListener('click', e => { if (e.target === bd) closeModal(bd); });
+  bd.querySelectorAll('[data-close]').forEach(c => c.addEventListener('click', () => closeModal(bd)));
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTop(); });
+
+// ── Focus trap ──
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const top = [...document.querySelectorAll('.m-backdrop.is-open')].pop();
+  if (!top) return;
+  const focusables = [...top.querySelectorAll('input, select, textarea, button:not([disabled]), [tabindex]:not([tabindex="-1"])')];
+  if (!focusables.length) return;
+  const first = focusables[0], last = focusables[focusables.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
+
+// ── Brand inheritance switch ──
+const brandSets = {
+  forge:     { '--brand-primary': '#2c3a2e', '--brand-cta': '#b78c45', '--brand-cta-text': '#ffffff', '--brand-accent': '#c4391f' },
+  beardmore: { '--brand-primary': '#2b1410', '--brand-cta': '#d4a045', '--brand-cta-text': '#ffffff', '--brand-accent': '#7a2a22' },
+  severn:    { '--brand-primary': '#1a1a1a', '--brand-cta': '#c4391f', '--brand-cta-text': '#ffffff', '--brand-accent': '#f7c948' },
+  hartcliffe:{ '--brand-primary': '#1a3a52', '--brand-cta': '#c4391f', '--brand-cta-text': '#ffffff', '--brand-accent': '#a89876' }
+};
+document.querySelectorAll('.brand-switch button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.brand-switch button').forEach(x => x.classList.remove('is-on'));
+    b.classList.add('is-on');
+    const set = brandSets[b.dataset.brand];
+    if (set) Object.entries(set).forEach(([k, v]) => document.documentElement.style.setProperty(k, v));
+  });
+});
+</script>
+</body>
+</html>

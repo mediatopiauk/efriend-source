@@ -1,0 +1,3 @@
+# Lens 6 — Shop
+
+A fully-loaded e-commerce surface for the middle market — independent retailers, manufacturers selling direct, wholesalers with trade tiers, craft producers. Mega-menu nav, rotating promo hero, trust strip, featured products, category grid, filtered product grid with sort + pagination, featured collection, reviews, newsletter, FAQ, multi-column footer with payment icons. Built around Stripe Payment Links per product (Mode A) and Enquire form (Mode B) — no full cart abstraction. Wholesale tier built in: three states (anonymous · applicant · logged-in trade). Not a Shopify replacement — a serious option for businesses that need a real shop without Shopify's overhead.

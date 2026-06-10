@@ -1,0 +1,21 @@
+/* ============================================================
+   OUTPUT ENGINE — Corporate preset
+   Navy/grey, structured grids, B2B trust.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+[data-preset="corporate"] {
+  --font-display:      'Inter', system-ui, sans-serif;
+  --font-body:         'Inter', system-ui, sans-serif;
+
+  --preset-radius-sm:  4px;
+  --preset-radius-md:  6px;
+  --preset-radius-lg:  8px;
+
+  --preset-shadow-card: 0 1px 2px rgba(15,25,35,0.06);
+  --preset-shadow-lift: 0 4px 12px rgba(15,25,35,0.08), 0 1px 2px rgba(15,25,35,0.04);
+
+  --preset-tracking-display: -0.02em;
+  --preset-tracking-heading: -0.01em;
+}

@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lens 5 · Local Authority — Brightside</title>
+<style>
+/* —— Inlined from _shared/tokens.css for standalone use —— */
+/* Brightside fixture tokens — shared across lens comps.
+   Lens comps are wireframe-fidelity per Phase A scope. Visual polish is Phase B. */
+:root {
+  /* Foundation */
+  --f-white: #ffffff;
+  --f-wash:  #f7f5f1;
+  --f-pale:  #ebe7df;
+  --f-mid:   #8a8378;
+  --f-slate: #4a463f;
+  --f-dark:  #1c1a17;
+
+  /* Brightside brand */
+  --site-primary:    #0d7a70;   /* teal */
+  --site-primary-700:#085f57;
+  --site-cta:        #c2185b;   /* magenta */
+  --site-cta-700:    #99124a;
+
+  /* Module accent colours (for the dock — not lens chrome) */
+  --mod-voice:   #c2185b;
+  --mod-booking: #0d7a70;
+  --mod-reviews: #c2410c;
+  --mod-chatbot: #7c3aed;
+
+  /* Typography — Phase B Typography Mood Library will override these */
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-body:    'Inter', -apple-system, system-ui, sans-serif;
+
+  /* Spacing scale */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+  --s-9: 96px; --s-10: 128px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  color: var(--f-dark);
+  background: var(--f-white);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+/* Brightside content fixture is HARDCODED into each lens file —
+   this is wireframe-fidelity, not the production data-driven render. */
+
+/* Wireframe placeholder hatching */
+.wf-img {
+  background:
+    repeating-linear-gradient(45deg, var(--f-pale) 0 8px, var(--f-wash) 8px 16px);
+  border: 1px solid var(--f-pale);
+  position: relative;
+}
+.wf-img::after {
+  content: attr(data-label);
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--f-mid); font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* Banner showing the lens name + phase note */
+.lens-tag {
+  position: fixed; left: 16px; top: 16px; z-index: 200;
+  background: var(--f-dark); color: var(--f-white);
+  padding: 6px 12px; border-radius: 4px;
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 600;
+}
+.lens-tag b { color: #ffd166; font-weight: 600; }
+
+</style>
+<style>
+  /* Top utility bar — opening hours strip */
+  .l5-util {
+    background: var(--f-dark); color: #fff;
+    padding: 8px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12.5px;
+  }
+  .l5-util .open { display: inline-flex; align-items: center; gap: 8px; }
+  .l5-util .open .dot { width: 7px; height: 7px; border-radius: 999px; background: #34d399; display: inline-block; }
+  .l5-util a { color: #fff; text-decoration: none; font-weight: 600; }
+
+  .l5-nav {
+    position: sticky; top: 0; z-index: 50;
+    background: #fff;
+    border-bottom: 1px solid var(--f-pale);
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .l5-nav .brand { font-family: var(--font-display); font-size: 19px; font-weight: 600; }
+  .l5-nav nav { display: flex; gap: 28px; font-size: 14px; color: var(--f-slate); }
+  .l5-nav .phone {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--site-primary); font-weight: 700; font-size: 15px; text-decoration: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* SPLIT HERO — left content, right map */
+  .l5-hero {
+    display: grid; grid-template-columns: 5fr 4fr;
+    min-height: 480px;
+    border-bottom: 1px solid var(--f-pale);
+  }
+  .l5-hero-l {
+    padding: 64px 56px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .l5-hero .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    align-self: flex-start;
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--site-primary); background: rgba(13,122,112,0.1);
+    padding: 5px 10px; border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  .l5-hero h1 { font-size: clamp(34px, 4.4vw, 52px); line-height: 1.08; margin-bottom: 16px; max-width: 16ch; }
+  .l5-hero p { font-size: 16px; color: var(--f-slate); margin: 0 0 24px; max-width: 50ch; line-height: 1.6; }
+  .l5-hero-meta { display: flex; gap: 32px; margin-bottom: 28px; }
+  .l5-hero-meta div { display: flex; flex-direction: column; gap: 2px; }
+  .l5-hero-meta .lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--f-mid); }
+  .l5-hero-meta .val { font-size: 15px; color: var(--f-dark); font-weight: 600; }
+  .l5-hero-actions { display: flex; gap: 12px; }
+  .l5-hero-actions .btn-1 {
+    background: var(--site-cta); color: #fff;
+    padding: 14px 28px; border-radius: 4px;
+    font-size: 15px; font-weight: 600; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .l5-hero-actions .btn-2 {
+    border: 1px solid var(--f-pale);
+    padding: 14px 28px; border-radius: 4px;
+    color: var(--f-dark); font-weight: 600; text-decoration: none; font-size: 15px;
+  }
+  .l5-map {
+    background: var(--f-wash);
+    position: relative;
+  }
+  .l5-map .wf-img { position: absolute; inset: 0; }
+  .l5-map .pin {
+    position: absolute; left: 55%; top: 45%;
+    width: 32px; height: 32px;
+    background: var(--site-cta);
+    border-radius: 999px;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 2;
+  }
+  .l5-map .pin::after {
+    content: '';
+    position: absolute; left: 50%; bottom: -8px;
+    transform: translateX(-50%) rotate(45deg);
+    width: 10px; height: 10px;
+    background: var(--site-cta);
+  }
+  .l5-map-overlay {
+    position: absolute; left: 24px; bottom: 24px; z-index: 3;
+    background: #fff;
+    padding: 14px 18px;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    font-size: 13px;
+    max-width: 220px;
+  }
+  .l5-map-overlay b { display: block; font-size: 14px; margin-bottom: 2px; }
+
+  /* Trust bar */
+  .l5-trust {
+    padding: 24px 32px;
+    background: var(--f-wash);
+    border-bottom: 1px solid var(--f-pale);
+  }
+  .l5-trust-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
+    gap: 40px;
+    font-size: 13px; color: var(--f-slate);
+  }
+  .l5-trust-inner b { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--f-dark); }
+  .l5-trust-inner b::before { content: '✓'; color: var(--site-primary); font-weight: 700; }
+
+  /* Service areas */
+  .l5-areas {
+    padding: 80px 32px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .l5-areas h2 { font-size: 32px; margin-bottom: 12px; }
+  .l5-areas .sub { color: var(--f-slate); margin-bottom: 32px; }
+  .l5-areas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .l5-area {
+    background: #fff; border: 1px solid var(--f-pale);
+    padding: 20px;
+    text-decoration: none; color: inherit;
+    border-radius: 4px;
+    transition: border-color 200ms ease;
+  }
+  .l5-area:hover { border-color: var(--site-primary); }
+  .l5-area b { display: block; font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .l5-area small { font-size: 12.5px; color: var(--f-mid); }
+
+  /* Services compact list with prices */
+  .l5-svcs {
+    padding: 80px 32px;
+    background: var(--f-wash);
+  }
+  .l5-svcs-inner { max-width: 900px; margin: 0 auto; }
+  .l5-svcs h2 { font-size: 32px; margin-bottom: 8px; }
+  .l5-svcs .sub { color: var(--f-slate); margin-bottom: 32px; }
+  .l5-svcs-list {
+    background: #fff;
+    border: 1px solid var(--f-pale);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .l5-svc {
+    display: grid; grid-template-columns: 1fr auto auto;
+    gap: 24px; align-items: center;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--f-pale);
+  }
+  .l5-svc:last-child { border-bottom: 0; }
+  .l5-svc b { font-size: 15.5px; font-weight: 600; display: block; }
+  .l5-svc small { font-size: 13px; color: var(--f-mid); }
+  .l5-svc .dur { font-size: 13px; color: var(--f-mid); }
+  .l5-svc .px { font-family: var(--font-display); font-size: 22px; color: var(--site-primary); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+  /* Testimonials with full attribution */
+  .l5-revs {
+    padding: 80px 32px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .l5-revs .head { text-align: center; margin-bottom: 40px; }
+  .l5-revs .stars { color: var(--mod-reviews); font-size: 24px; }
+  .l5-revs h2 { font-size: 32px; margin: 8px 0; }
+  .l5-revs .meta { color: var(--f-mid); font-size: 13.5px; }
+  .l5-revs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .l5-rev { background: #fff; border: 1px solid var(--f-pale); padding: 24px; border-radius: 4px; }
+  .l5-rev .stars { color: var(--mod-reviews); font-size: 14px; margin-bottom: 10px; }
+  .l5-rev blockquote { margin: 0 0 16px; font-size: 14.5px; color: var(--f-slate); line-height: 1.55; }
+  .l5-rev cite { font-style: normal; font-size: 13px; color: var(--f-mid); display: block; }
+  .l5-rev cite b { color: var(--f-dark); font-weight: 600; }
+  .l5-rev .svc-tag {
+    display: inline-block;
+    background: var(--f-wash);
+    padding: 3px 8px; border-radius: 4px;
+    font-size: 11px; color: var(--f-slate);
+    margin-top: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  /* FAQ */
+  .l5-faq {
+    padding: 80px 32px;
+    background: var(--f-wash);
+  }
+  .l5-faq-inner { max-width: 900px; margin: 0 auto; }
+  .l5-faq h2 { font-size: 32px; margin-bottom: 32px; }
+  .l5-faq-item { border-top: 1px solid var(--f-pale); padding: 20px 0; }
+  .l5-faq-item:last-child { border-bottom: 1px solid var(--f-pale); }
+  .l5-faq-item h3 { font-size: 17px; font-weight: 600; cursor: pointer; }
+
+  /* Contact form */
+  .l5-contact {
+    padding: 80px 32px;
+    max-width: 800px; margin: 0 auto;
+  }
+  .l5-contact h2 { font-size: 32px; text-align: center; margin-bottom: 12px; }
+  .l5-contact .sub { text-align: center; color: var(--f-slate); margin-bottom: 32px; }
+  .l5-contact form {
+    display: grid; gap: 12px;
+    background: #fff;
+    border: 1px solid var(--f-pale);
+    padding: 28px;
+    border-radius: 6px;
+  }
+  .l5-contact .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .l5-contact input, .l5-contact textarea {
+    padding: 12px 14px;
+    border: 1px solid var(--f-pale); border-radius: 4px;
+    font-family: inherit; font-size: 14.5px;
+  }
+  .l5-contact textarea { min-height: 100px; resize: vertical; }
+  .l5-contact button {
+    padding: 14px;
+    background: var(--site-cta); color: #fff;
+    border: 0; border-radius: 4px;
+    font-family: inherit; font-size: 15px; font-weight: 600;
+    cursor: pointer;
+  }
+
+  .l5-foot {
+    background: var(--f-dark); color: #94908a;
+    padding: 48px 32px 24px;
+    text-align: center;
+  }
+  .l5-foot b { display: block; font-family: var(--font-display); font-size: 18px; color: #fff; margin-bottom: 8px; }
+  .l5-foot p { font-size: 13.5px; margin: 0 0 6px; }
+
+  @media (max-width: 900px) {
+    .l5-util { flex-direction: column; gap: 4px; padding: 8px 16px; }
+    .l5-nav nav { display: none; }
+    .l5-hero { grid-template-columns: 1fr; }
+    .l5-map { min-height: 280px; }
+    .l5-areas-grid { grid-template-columns: repeat(2, 1fr); }
+    .l5-revs-grid { grid-template-columns: 1fr; }
+    .l5-contact .row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lens-tag">Lens 5 · Local Authority <b>· Phase A wireframe</b></div>
+
+<div class="l5-util">
+  <span class="open"><span class="dot"></span>Open now · Closes 6pm Thursday</span>
+  <a href="tel:+441179876543">Call: +44 117 987 6543</a>
+</div>
+
+<header class="l5-nav">
+  <div class="brand">Brightside Pet Co</div>
+  <nav><a href="#">Services</a><a href="#">Areas</a><a href="#">Reviews</a><a href="#">Contact</a></nav>
+  <a class="phone" href="tel:+441179876543">📞 +44 117 987 6543</a>
+</header>
+
+<section class="l5-hero">
+  <div class="l5-hero-l">
+    <span class="badge">★ Bristol's highest-rated · 47 reviews</span>
+    <h1>Trusted dog grooming on Cotham Hill.</h1>
+    <p>Independent, City &amp; Guilds Level 3, nine years grooming Bristol's dogs. Walk-in trims, full grooms, and a calm space anxious rescues can handle.</p>
+    <div class="l5-hero-meta">
+      <div><span class="lbl">Address</span><span class="val">42 Cotham Hill, BS6 6LA</span></div>
+      <div><span class="lbl">Hours today</span><span class="val">9am — 6pm</span></div>
+    </div>
+    <div class="l5-hero-actions">
+      <a class="btn-1" href="tel:+441179876543">📞 Call now</a>
+      <a class="btn-2" href="#">Get directions</a>
+    </div>
+  </div>
+  <div class="l5-map">
+    <div class="wf-img" data-label="Map embed · 800×480"></div>
+    <span class="pin"></span>
+    <div class="l5-map-overlay">
+      <b>Brightside</b>
+      42 Cotham Hill, Bristol BS6 6LA<br>
+      <span style="color:var(--site-primary); font-weight:600;">★ 4.7</span> · 47 reviews
+    </div>
+  </div>
+</section>
+
+<section class="l5-trust">
+  <div class="l5-trust-inner">
+    <b>City &amp; Guilds L3</b>
+    <b>Insured by Pet Business</b>
+    <b>9 years grooming</b>
+    <b>Card, cash, Apple Pay</b>
+    <b>Independent · family-run</b>
+  </div>
+</section>
+
+<section class="l5-areas">
+  <h2>We're proud to serve…</h2>
+  <p class="sub">Walk-in clients across central and north Bristol. Free 30-min parking on Cotham Hill.</p>
+  <div class="l5-areas-grid">
+    <a class="l5-area" href="#"><b>Clifton</b><small>5 min · BS8</small></a>
+    <a class="l5-area" href="#"><b>Redland</b><small>4 min · BS6</small></a>
+    <a class="l5-area" href="#"><b>Cotham</b><small>1 min · BS6</small></a>
+    <a class="l5-area" href="#"><b>Bishopston</b><small>7 min · BS7</small></a>
+  </div>
+</section>
+
+<section class="l5-svcs">
+  <div class="l5-svcs-inner">
+    <h2>Services &amp; prices</h2>
+    <p class="sub">Honest pricing — thick or matted coats may add £8–15.</p>
+    <div class="l5-svcs-list">
+      <div class="l5-svc"><div><b>Full groom · small</b><small>Bath, hand-dry, scissor finish, nails</small></div><div class="dur">60 min</div><div class="px">£52</div></div>
+      <div class="l5-svc"><div><b>Full groom · medium</b><small>Cockapoos, spaniels, retrievers under 25kg</small></div><div class="dur">90 min</div><div class="px">£68</div></div>
+      <div class="l5-svc"><div><b>Full groom · large</b><small>Doodles, setters, doubles · full blow-out</small></div><div class="dur">120 min</div><div class="px">£84</div></div>
+      <div class="l5-svc"><div><b>Puppy first groom</b><small>Gentle intro for pups 12–20 weeks</small></div><div class="dur">45 min</div><div class="px">£38</div></div>
+      <div class="l5-svc"><div><b>Bath &amp; tidy</b><small>Between-groom freshen-up</small></div><div class="dur">40 min</div><div class="px">£32</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="l5-revs">
+  <div class="head">
+    <div class="stars">★★★★★</div>
+    <h2>4.7 from 47 Bristol families</h2>
+    <div class="meta">Reviews from Google &amp; Facebook · last updated this week</div>
+  </div>
+  <div class="l5-revs-grid">
+    <div class="l5-rev">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Em is the only groomer Milo doesn't shake the whole way home. The salon is so calm — completely different from where we used to go."</blockquote>
+      <cite><b>Sarah Thompson</b> · Clifton, BS8<span class="svc-tag">Full groom · medium</span></cite>
+    </div>
+    <div class="l5-rev">
+      <div class="stars">★★★★★</div>
+      <blockquote>"My anxious rescue had been turned away from two groomers. Em was patient and gentle from the first appointment. Genuinely brilliant."</blockquote>
+      <cite><b>James Mitchell</b> · Redland, BS6<span class="svc-tag">Full groom · large</span></cite>
+    </div>
+    <div class="l5-rev">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Booked the puppy first-groom for our spaniel. She loved it and we've been coming back ever since. So much patience."</blockquote>
+      <cite><b>Emma Rodriguez</b> · Bishopston, BS7<span class="svc-tag">Puppy first groom</span></cite>
+    </div>
+  </div>
+</section>
+
+<section class="l5-faq">
+  <div class="l5-faq-inner">
+    <h2>Local FAQ</h2>
+    <div class="l5-faq-item"><h3>Where can I park?</h3></div>
+    <div class="l5-faq-item"><h3>Do you take walk-ins or appointment only?</h3></div>
+    <div class="l5-faq-item"><h3>What if my dog has been turned away elsewhere?</h3></div>
+    <div class="l5-faq-item"><h3>How long does a full groom take?</h3></div>
+    <div class="l5-faq-item"><h3>Do you do home visits?</h3></div>
+  </div>
+</section>
+
+<section class="l5-contact">
+  <h2>Send us a quick message</h2>
+  <p class="sub">We reply within 2 hours during opening hours.</p>
+  <form onsubmit="event.preventDefault();">
+    <div class="row">
+      <input type="text" placeholder="Your name" required>
+      <input type="tel" placeholder="Phone number" required>
+    </div>
+    <input type="text" placeholder="Dog's name and breed">
+    <textarea placeholder="What can we help with?"></textarea>
+    <button type="submit">Send message</button>
+  </form>
+</section>
+
+<footer class="l5-foot">
+  <b>Brightside Pet Co</b>
+  <p>42 Cotham Hill, Bristol BS6 6LA · +44 117 987 6543</p>
+  <p>Open Mon–Sat 9am–6pm · Closed Sundays</p>
+</footer>
+
+</body>
+</html>

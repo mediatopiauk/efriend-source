@@ -1,0 +1,1174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lens 8 · Quote / Custom Build — Severn Cut</title>
+<style>
+/* —— Inlined from _shared/tokens.css for standalone use —— */
+/* Brightside fixture tokens — shared across lens comps.
+   Lens comps are wireframe-fidelity per Phase A scope. Visual polish is Phase B. */
+:root {
+  /* Foundation */
+  --f-white: #ffffff;
+  --f-wash:  #f7f5f1;
+  --f-pale:  #ebe7df;
+  --f-mid:   #8a8378;
+  --f-slate: #4a463f;
+  --f-dark:  #1c1a17;
+
+  /* Brightside brand */
+  --site-primary:    #0d7a70;   /* teal */
+  --site-primary-700:#085f57;
+  --site-cta:        #c2185b;   /* magenta */
+  --site-cta-700:    #99124a;
+
+  /* Module accent colours (for the dock — not lens chrome) */
+  --mod-voice:   #c2185b;
+  --mod-booking: #0d7a70;
+  --mod-reviews: #c2410c;
+  --mod-chatbot: #7c3aed;
+
+  /* Typography — Phase B Typography Mood Library will override these */
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-body:    'Inter', -apple-system, system-ui, sans-serif;
+
+  /* Spacing scale */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+  --s-9: 96px; --s-10: 128px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  color: var(--f-dark);
+  background: var(--f-white);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+/* Brightside content fixture is HARDCODED into each lens file —
+   this is wireframe-fidelity, not the production data-driven render. */
+
+/* Wireframe placeholder hatching */
+.wf-img {
+  background:
+    repeating-linear-gradient(45deg, var(--f-pale) 0 8px, var(--f-wash) 8px 16px);
+  border: 1px solid var(--f-pale);
+  position: relative;
+}
+.wf-img::after {
+  content: attr(data-label);
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--f-mid); font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* Banner showing the lens name + phase note */
+.lens-tag {
+  position: fixed; left: 16px; top: 16px; z-index: 200;
+  background: var(--f-dark); color: var(--f-white);
+  padding: 6px 12px; border-radius: 4px;
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 600;
+}
+.lens-tag b { color: #ffd166; font-weight: 600; }
+
+</style>
+<style>
+  :root {
+    --sc-ink:        #15171a;
+    --sc-charcoal:   #1f2328;
+    --sc-steel:      #5b6770;
+    --sc-mist:       #d9dde2;
+    --sc-paper:      #f4f5f7;
+    --sc-orange:     #e94f0e;
+    --sc-orange-700: #c63b03;
+    --sc-amber:      #ffb454;
+    --sc-cream:      #faf7f1;
+  }
+  body { background: #fff; color: var(--sc-ink); font-family: var(--font-body); }
+  h1,h2,h3,h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+
+  /* —— UTILITY BAR —— */
+  .l8-util {
+    background: var(--sc-ink); color: rgba(255,255,255,0.85);
+    padding: 9px 32px;
+    display: flex; justify-content: space-between; font-size: 12.5px;
+  }
+  .l8-util b { color: #fff; }
+  .l8-util .iso { display: inline-block; padding: 2px 8px; border: 1px solid rgba(255,255,255,0.25); font-size: 10.5px; letter-spacing: 0.1em; margin-left: 8px; }
+
+  /* —— NAV —— */
+  .l8-nav {
+    background: #fff;
+    border-bottom: 1px solid var(--sc-mist);
+    padding: 18px 32px;
+    display: grid; grid-template-columns: 240px 1fr auto;
+    align-items: center;
+  }
+  .l8-nav .brand {
+    font-family: var(--font-display);
+    font-weight: 700; font-size: 22px;
+    letter-spacing: -0.02em;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .l8-nav .brand .mark {
+    width: 32px; height: 32px;
+    background: var(--sc-ink); color: var(--sc-orange);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 16px;
+    font-family: var(--font-body);
+  }
+  .l8-nav .brand small { display: block; font-size: 9px; letter-spacing: 0.3em; color: var(--sc-steel); font-weight: 600; font-family: var(--font-body); margin-top: 0; }
+  .l8-nav nav {
+    display: flex; justify-content: center; gap: 30px;
+    font-size: 14px; font-weight: 500;
+  }
+  .l8-nav nav a { color: var(--sc-charcoal); text-decoration: none; }
+  .l8-nav nav a:hover { color: var(--sc-orange); }
+  .l8-nav .cta-wrap { display: flex; gap: 12px; align-items: center; }
+  .l8-nav .phone { font-size: 13.5px; color: var(--sc-charcoal); font-weight: 600; }
+  .l8-nav .cta {
+    background: var(--sc-orange); color: #fff;
+    padding: 12px 22px;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    text-decoration: none;
+  }
+  .l8-nav .cta:hover { background: var(--sc-orange-700); }
+
+  /* —— HERO —— */
+  .l8-hero {
+    background: var(--sc-ink); color: #fff;
+    padding: 80px 80px 96px;
+    position: relative; overflow: hidden;
+    display: grid; grid-template-columns: 1.05fr 1fr;
+    gap: 56px; align-items: center;
+  }
+  .l8-hero::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+    background: var(--sc-orange);
+  }
+  .l8-hero-text .eyebrow {
+    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--sc-orange); font-weight: 700; margin-bottom: 22px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .l8-hero-text .eyebrow::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.18); }
+  .l8-hero-text h1 {
+    font-size: 80px; line-height: 0.96; font-weight: 500;
+    margin: 0 0 22px; letter-spacing: -0.035em;
+    max-width: 14ch;
+  }
+  .l8-hero-text h1 em { font-style: italic; color: var(--sc-orange); font-weight: 500; }
+  .l8-hero-text p {
+    font-size: 17px; line-height: 1.55; color: rgba(255,255,255,0.75);
+    max-width: 42ch; margin: 0 0 36px;
+  }
+  .l8-hero-text .ctas { display: flex; gap: 14px; align-items: center; }
+  .l8-hero-text .btn1 {
+    background: var(--sc-orange); color: #fff;
+    padding: 18px 30px;
+    font-size: 14px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none;
+    display: inline-flex; gap: 12px; align-items: center;
+  }
+  .l8-hero-text .btn1 .icon {
+    display: inline-block; font-family: var(--font-body); font-weight: 800;
+  }
+  .l8-hero-text .btn2 {
+    color: #fff; opacity: 0.8;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 6px;
+  }
+  .l8-hero-text .trust {
+    display: flex; gap: 28px;
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.55); font-weight: 600;
+  }
+  .l8-hero-text .trust b { display: block; color: #fff; font-size: 24px; letter-spacing: -0.02em; font-family: var(--font-display); font-weight: 500; margin-bottom: 2px; text-transform: none; }
+
+  .l8-hero-img { position: relative; }
+  .l8-hero-img .wf-img {
+    aspect-ratio: 4/5;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 8px, rgba(255,255,255,0.02) 8px 16px);
+    border-color: rgba(255,255,255,0.18);
+  }
+  .l8-hero-img .wf-img::after { color: rgba(255,255,255,0.45); }
+  .l8-hero-img .floating-tag {
+    position: absolute; right: -16px; top: 32px;
+    background: var(--sc-orange); color: #fff;
+    padding: 12px 18px;
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700;
+    box-shadow: 0 16px 32px rgba(0,0,0,0.25);
+  }
+  .l8-hero-img .stat-tag {
+    position: absolute; left: -16px; bottom: 40px;
+    background: #fff; color: var(--sc-ink);
+    padding: 18px 24px;
+  }
+  .l8-hero-img .stat-tag b { font-family: var(--font-display); font-size: 38px; display: block; line-height: 1; }
+  .l8-hero-img .stat-tag small { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--sc-steel); font-weight: 600; }
+
+  /* —— SERVICES GRID —— */
+  .l8-services { padding: 96px 80px; background: var(--sc-paper); }
+  .l8-services-head { max-width: 1280px; margin: 0 auto 56px; display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; }
+  .l8-services-head .left .label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sc-orange); font-weight: 700; margin-bottom: 12px; }
+  .l8-services-head .left h2 { font-size: 52px; max-width: 16ch; line-height: 1; }
+  .l8-services-head .right { font-size: 16px; color: var(--sc-steel); max-width: 38ch; line-height: 1.6; }
+  .l8-services-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    max-width: 1280px; margin: 0 auto;
+  }
+  .l8-service {
+    background: #fff;
+    border: 1px solid var(--sc-mist);
+    padding: 28px 24px 24px;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .l8-service .num {
+    position: absolute; top: 18px; right: 22px;
+    font-family: var(--font-display);
+    font-size: 14px; color: var(--sc-steel); font-weight: 500;
+  }
+  .l8-service .wf-img { aspect-ratio: 4/3; margin-bottom: 20px; }
+  .l8-service h4 { font-size: 22px; font-weight: 500; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .l8-service p { font-size: 13.5px; line-height: 1.55; color: var(--sc-steel); margin: 0 0 18px; flex: 1; }
+  .l8-service .specs { display: flex; gap: 14px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sc-charcoal); border-top: 1px solid var(--sc-mist); padding-top: 14px; margin-bottom: 16px; }
+  .l8-service .specs b { color: var(--sc-orange); font-weight: 700; }
+  .l8-service .more {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--sc-ink); text-decoration: none;
+  }
+  .l8-service .more::after { content: " →"; color: var(--sc-orange); }
+
+  /* —— PROCESS —— */
+  .l8-process { padding: 96px 80px; background: #fff; }
+  .l8-process-head { text-align: center; margin-bottom: 64px; }
+  .l8-process-head .label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sc-orange); font-weight: 700; margin-bottom: 12px; }
+  .l8-process-head h2 { font-size: 52px; line-height: 1; margin: 0 0 16px; }
+  .l8-process-head p { color: var(--sc-steel); font-size: 16px; max-width: 52ch; margin: 0 auto; line-height: 1.6; }
+
+  .l8-process-strip {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    position: relative;
+    gap: 0;
+  }
+  .l8-process-strip::before {
+    content: ""; position: absolute; left: 12.5%; right: 12.5%; top: 38px; height: 2px;
+    background: var(--sc-mist); z-index: 0;
+  }
+  .l8-step {
+    position: relative; z-index: 1;
+    text-align: center;
+    padding: 0 22px;
+  }
+  .l8-step .circle {
+    width: 76px; height: 76px;
+    background: #fff;
+    border: 2px solid var(--sc-orange);
+    color: var(--sc-orange);
+    border-radius: 99px;
+    margin: 0 auto 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 32px; font-weight: 500;
+  }
+  .l8-step.is-done .circle { background: var(--sc-orange); color: #fff; }
+  .l8-step h4 { font-size: 19px; font-weight: 500; margin: 0 0 10px; }
+  .l8-step p { font-size: 13.5px; color: var(--sc-steel); line-height: 1.55; margin: 0; }
+  .l8-step .when { font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--sc-orange); font-weight: 700; margin-top: 12px; }
+
+  /* —— MATERIALS —— */
+  .l8-materials { padding: 96px 80px; background: var(--sc-ink); color: #fff; }
+  .l8-materials-head { max-width: 1280px; margin: 0 auto 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: end; }
+  .l8-materials-head .label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sc-orange); font-weight: 700; margin-bottom: 12px; }
+  .l8-materials-head h2 { font-size: 52px; line-height: 1; max-width: 14ch; }
+  .l8-materials-head p { color: rgba(255,255,255,0.7); font-size: 15.5px; line-height: 1.6; max-width: 44ch; }
+
+  .l8-mat-grid {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+  }
+  .l8-mat {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+  }
+  .l8-mat:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.18); }
+  .l8-mat .swatch { aspect-ratio: 1/1; margin-bottom: 14px;
+    background: repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0 6px, rgba(255,255,255,0.04) 6px 12px);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .l8-mat .swatch.alum { background: linear-gradient(135deg, #c8ccd1 0%, #95a0ab 100%); }
+  .l8-mat .swatch.steel { background: linear-gradient(135deg, #6a7480 0%, #3d454e 100%); }
+  .l8-mat .swatch.brass { background: linear-gradient(135deg, #c39e51 0%, #8a6a2b 100%); }
+  .l8-mat .swatch.oak { background: linear-gradient(135deg, #c89a64 0%, #8a623a 100%); }
+  .l8-mat .swatch.ply { background: linear-gradient(135deg, #d8b481 0%, #ad8a5c 100%); }
+  .l8-mat .swatch.acrylic { background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(180,200,220,0.3) 100%); }
+  .l8-mat h5 { font-family: var(--font-body); font-size: 13px; font-weight: 600; margin: 0 0 4px; letter-spacing: 0; }
+  .l8-mat .meta { font-size: 11px; color: rgba(255,255,255,0.55); letter-spacing: 0.04em; }
+  .l8-mat .meta b { color: var(--sc-amber); font-weight: 600; }
+
+  .l8-mat-foot {
+    max-width: 1280px; margin: 28px auto 0; text-align: center;
+    font-size: 13px; color: rgba(255,255,255,0.6);
+  }
+  .l8-mat-foot a { color: var(--sc-orange); text-decoration: none; font-weight: 600; border-bottom: 1px solid var(--sc-orange); padding-bottom: 2px; }
+
+  /* —— PAST PROJECTS —— */
+  .l8-projects { padding: 96px 80px; background: var(--sc-paper); }
+  .l8-projects-head { max-width: 1280px; margin: 0 auto 56px; display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; }
+  .l8-projects-head .label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sc-orange); font-weight: 700; margin-bottom: 12px; }
+  .l8-projects-head h2 { font-size: 52px; line-height: 1; max-width: 16ch; }
+  .l8-projects-filters { display: flex; gap: 6px; }
+  .l8-projects-filters .chip {
+    padding: 8px 14px; font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    border: 1px solid var(--sc-mist); background: #fff;
+    cursor: pointer;
+  }
+  .l8-projects-filters .chip.is-on { background: var(--sc-ink); color: #fff; border-color: var(--sc-ink); }
+
+  .l8-projects-grid {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .l8-project {
+    background: #fff;
+    border: 1px solid var(--sc-mist);
+    overflow: hidden;
+  }
+  .l8-project .wf-img { aspect-ratio: 16/11; }
+  .l8-project-body { padding: 24px 24px 26px; }
+  .l8-project .client {
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--sc-orange); font-weight: 700; margin-bottom: 10px;
+  }
+  .l8-project h4 { font-size: 21px; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 10px; }
+  .l8-project p { font-size: 13.5px; line-height: 1.55; color: var(--sc-steel); margin: 0 0 18px; }
+  .l8-project .stats { display: flex; gap: 22px; padding-top: 16px; border-top: 1px solid var(--sc-mist); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sc-steel); font-weight: 600; }
+  .l8-project .stats b { display: block; color: var(--sc-ink); font-size: 14px; letter-spacing: 0; font-family: var(--font-display); font-weight: 500; text-transform: none; margin-bottom: 2px; }
+
+  /* —— QUOTE FORM (the heart) —— */
+  .l8-quote { padding: 0; background: var(--sc-orange); color: #fff; }
+  .l8-quote-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.3fr;
+    gap: 0;
+  }
+  .l8-quote-pitch { padding: 96px 64px 96px 80px; }
+  .l8-quote-pitch .label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.7); font-weight: 700; margin-bottom: 16px; }
+  .l8-quote-pitch h2 { font-size: 54px; line-height: 0.98; font-weight: 500; margin: 0 0 22px; letter-spacing: -0.025em; }
+  .l8-quote-pitch p { font-size: 17px; line-height: 1.55; opacity: 0.9; margin: 0 0 22px; max-width: 38ch; }
+  .l8-quote-pitch ul {
+    list-style: none; padding: 0; margin: 32px 0 0;
+    border-top: 1px solid rgba(255,255,255,0.25);
+    padding-top: 24px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .l8-quote-pitch li {
+    font-size: 14.5px; font-weight: 500;
+    display: flex; gap: 12px; align-items: center;
+  }
+  .l8-quote-pitch li::before {
+    content: "✓"; width: 22px; height: 22px;
+    border-radius: 99px; background: #fff; color: var(--sc-orange);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .l8-quote-form {
+    background: #fff; color: var(--sc-ink);
+    padding: 64px 72px;
+    box-shadow: -28px 0 0 var(--sc-orange-700), 0 24px 48px rgba(0,0,0,0.15);
+  }
+  .l8-quote-form h3 {
+    font-family: var(--font-body);
+    font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--sc-orange); font-weight: 700;
+    margin: 0 0 14px;
+  }
+  .l8-quote-form .h-big {
+    font-size: 30px; font-weight: 500; letter-spacing: -0.02em; margin: 0 0 28px;
+    line-height: 1.15;
+  }
+  .l8-quote-form .field { margin-bottom: 18px; }
+  .l8-quote-form label {
+    display: block;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 700; color: var(--sc-charcoal); opacity: 0.7;
+    margin-bottom: 6px;
+  }
+  .l8-quote-form .input,
+  .l8-quote-form select,
+  .l8-quote-form textarea {
+    width: 100%;
+    border: 1px solid var(--sc-mist); background: #fff;
+    padding: 13px 14px;
+    font-size: 14.5px; font-family: var(--font-body);
+    color: var(--sc-ink);
+  }
+  .l8-quote-form textarea { min-height: 96px; resize: vertical; }
+  .l8-quote-form .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .l8-quote-form .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  .l8-quote-form .dropzone {
+    border: 2px dashed var(--sc-mist);
+    padding: 28px 20px;
+    text-align: center;
+    background: var(--sc-paper);
+  }
+  .l8-quote-form .dropzone .ico {
+    width: 44px; height: 44px;
+    background: var(--sc-ink); color: var(--sc-orange);
+    margin: 0 auto 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .l8-quote-form .dropzone b { display: block; font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .l8-quote-form .dropzone small { font-size: 12px; color: var(--sc-steel); }
+  .l8-quote-form .dropzone .browse {
+    display: inline-block; margin-top: 12px;
+    background: var(--sc-ink); color: #fff;
+    padding: 8px 16px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  .l8-quote-form .file-row {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: var(--sc-paper);
+    font-size: 13px;
+  }
+  .l8-quote-form .file-row .fileico {
+    width: 30px; height: 36px; background: var(--sc-orange); color: #fff;
+    font-size: 9px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .l8-quote-form .file-row b { font-weight: 600; }
+  .l8-quote-form .file-row small { color: var(--sc-steel); margin-left: auto; }
+  .l8-quote-form .file-row .x { color: var(--sc-steel); cursor: pointer; padding: 0 8px; }
+
+  .l8-quote-form .submit {
+    margin-top: 8px;
+    width: 100%;
+    background: var(--sc-orange); color: #fff;
+    border: none; padding: 18px;
+    font-size: 14px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .l8-quote-form .promise {
+    margin-top: 14px;
+    font-size: 12.5px; text-align: center; color: var(--sc-steel);
+  }
+  .l8-quote-form .promise b { color: var(--sc-ink); }
+
+  /* —— ABOUT / WORKSHOP —— */
+  .l8-about { padding: 96px 80px; background: #fff; }
+  .l8-about-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.2fr 1fr;
+    gap: 80px; align-items: center;
+  }
+  .l8-about .label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sc-orange); font-weight: 700; margin-bottom: 12px; }
+  .l8-about h2 { font-size: 48px; line-height: 1; margin: 0 0 24px; }
+  .l8-about p { font-size: 16px; line-height: 1.65; color: var(--sc-steel); margin: 0 0 16px; }
+  .l8-about .creds {
+    margin-top: 32px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px; padding-top: 28px; border-top: 1px solid var(--sc-mist);
+  }
+  .l8-about .creds .item b { display: block; font-family: var(--font-display); font-size: 30px; line-height: 1; margin-bottom: 6px; }
+  .l8-about .creds .item small { font-size: 11.5px; color: var(--sc-steel); letter-spacing: 0.04em; }
+
+  .l8-about-img-wrap { position: relative; }
+  .l8-about-img-wrap .wf-img { aspect-ratio: 4/5; }
+  .l8-about-img-wrap .badge-iso {
+    position: absolute; bottom: -16px; right: -16px;
+    background: #fff; padding: 16px 18px;
+    border: 1px solid var(--sc-mist);
+    display: flex; gap: 10px; align-items: center;
+  }
+  .l8-about-img-wrap .badge-iso .b {
+    width: 40px; height: 40px;
+    background: var(--sc-ink); color: var(--sc-orange);
+    font-weight: 800; font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .l8-about-img-wrap .badge-iso small { display: block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sc-steel); font-weight: 600; }
+  .l8-about-img-wrap .badge-iso b { font-size: 12.5px; font-weight: 600; }
+
+  /* —— FAQ —— */
+  .l8-faq { padding: 96px 80px; background: var(--sc-paper); }
+  .l8-faq-inner { max-width: 880px; margin: 0 auto; }
+  .l8-faq .label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sc-orange); font-weight: 700; margin-bottom: 12px; text-align: center; }
+  .l8-faq h2 { font-size: 48px; line-height: 1; text-align: center; margin: 0 0 56px; }
+  .l8-faq-item {
+    border-bottom: 1px solid var(--sc-mist);
+    padding: 22px 0;
+    cursor: pointer;
+  }
+  .l8-faq-item .q { display: flex; justify-content: space-between; align-items: center; }
+  .l8-faq-item .q h4 { font-size: 19px; font-weight: 500; letter-spacing: -0.005em; margin: 0; flex: 1; }
+  .l8-faq-item .q .plus { color: var(--sc-orange); font-size: 22px; font-weight: 300; }
+  .l8-faq-item .a {
+    font-size: 14.5px; line-height: 1.65; color: var(--sc-steel);
+    margin-top: 14px; max-width: 64ch;
+    display: none;
+  }
+  .l8-faq-item.is-open .a { display: block; }
+  .l8-faq-item.is-open .plus { transform: rotate(45deg); }
+
+  /* —— REVIEWS —— */
+  .l8-reviews { padding: 96px 80px; background: #fff; }
+  .l8-reviews-head { text-align: center; margin-bottom: 56px; }
+  .l8-reviews-head .label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sc-orange); font-weight: 700; margin-bottom: 12px; }
+  .l8-reviews-head h2 { font-size: 48px; line-height: 1; margin: 0 0 12px; }
+  .l8-reviews-head p { color: var(--sc-steel); font-size: 15px; }
+
+  .l8-reviews-grid { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .l8-review {
+    border: 1px solid var(--sc-mist);
+    padding: 28px;
+    background: #fff;
+  }
+  .l8-review .stars { color: var(--sc-orange); font-size: 14px; letter-spacing: 3px; margin-bottom: 16px; }
+  .l8-review p { font-size: 15px; line-height: 1.6; margin: 0 0 22px; color: var(--sc-charcoal); }
+  .l8-review .who { display: flex; gap: 14px; align-items: center; padding-top: 18px; border-top: 1px solid var(--sc-mist); }
+  .l8-review .who .av { width: 38px; height: 38px; border-radius: 99px; background: var(--sc-mist); }
+  .l8-review .who b { font-size: 13.5px; font-weight: 600; display: block; }
+  .l8-review .who small { font-size: 11.5px; color: var(--sc-steel); }
+
+  /* —— FOOTER —— */
+  .l8-foot { background: var(--sc-ink); color: rgba(255,255,255,0.7); padding: 80px 80px 32px; }
+  .l8-foot-cta {
+    background: var(--sc-charcoal);
+    padding: 40px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 64px;
+    border-left: 6px solid var(--sc-orange);
+  }
+  .l8-foot-cta h3 { font-size: 28px; color: #fff; margin: 0 0 6px; font-weight: 500; }
+  .l8-foot-cta p { margin: 0; font-size: 14px; opacity: 0.7; }
+  .l8-foot-cta .btn {
+    background: var(--sc-orange); color: #fff;
+    padding: 16px 28px;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none;
+  }
+  .l8-foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .l8-foot .brand { font-family: var(--font-display); font-size: 24px; color: #fff; font-weight: 600; letter-spacing: -0.02em; display: flex; gap: 10px; align-items: center; }
+  .l8-foot .brand .mark { width: 32px; height: 32px; background: var(--sc-orange); color: var(--sc-ink); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; font-family: var(--font-body); }
+  .l8-foot .blurb { margin-top: 16px; font-size: 13.5px; line-height: 1.65; max-width: 36ch; }
+  .l8-foot h5 { font-family: var(--font-body); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); font-weight: 700; margin: 0 0 18px; }
+  .l8-foot ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; font-size: 13.5px; }
+  .l8-foot ul a { color: rgba(255,255,255,0.82); text-decoration: none; }
+  .l8-foot .legal { padding-top: 24px; display: flex; justify-content: space-between; font-size: 11.5px; color: rgba(255,255,255,0.4); }
+
+  /* FAB */
+  .l8-fab { position: fixed; right: 24px; bottom: 24px; z-index: 100; }
+  .l8-fab .btn {
+    background: var(--sc-orange); color: #fff;
+    padding: 14px 22px; border-radius: 99px;
+    box-shadow: 0 12px 28px rgba(233,79,14,0.4);
+    font-size: 13.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    display: flex; gap: 10px; align-items: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="lens-tag">Lens 08 · <b>Quote / Custom Build</b> · fixture: Severn Cut CNC</div>
+
+<!-- ===== UTILITY ===== -->
+<div class="l8-util">
+  <div><b>Severn Cut Ltd</b> · Bridgnorth, Shropshire · UK-wide delivery</div>
+  <div>📞 01746 712 880  ·  <b>quotes@severncut.co.uk</b>  ·  ISO 9001 <span class="iso">CERTIFIED</span></div>
+</div>
+
+<!-- ===== NAV ===== -->
+<header class="l8-nav">
+  <div class="brand">
+    <div class="mark">SC</div>
+    <div>Severn Cut<small>PRECISION CNC ·  EST. 2008</small></div>
+  </div>
+  <nav>
+    <a href="#services">What we make</a>
+    <a href="#process">Process</a>
+    <a href="#materials">Materials</a>
+    <a href="#projects">Past work</a>
+    <a href="#about">The workshop</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <div class="cta-wrap">
+    <span class="phone">01746 712 880</span>
+    <a class="cta" href="#quote">Upload brief</a>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="l8-hero">
+  <div class="l8-hero-text">
+    <div class="eyebrow">CNC routing · Laser · Engraving</div>
+    <h1>Whatever you can draw,<br>we can <em>cut.</em></h1>
+    <p>Send us a sketch, a CAD file, or a napkin scan. We'll quote within one working day, cut it in our Bridgnorth workshop, and have it on your bench within the week.</p>
+    <div class="ctas">
+      <a class="btn1" href="#quote"><span class="icon">↑</span> Upload your brief</a>
+      <a class="btn2" href="#projects">See past projects</a>
+    </div>
+    <div class="trust">
+      <div><b>2,400+</b>parts cut last year</div>
+      <div><b>24 hr</b>quote turnaround</div>
+      <div><b>17 yrs</b>in the workshop</div>
+    </div>
+  </div>
+  <div class="l8-hero-img">
+    <div class="wf-img" data-label="hero · CNC spindle in action · 4:5"></div>
+    <div class="floating-tag">Quotes within 24 hours</div>
+    <div class="stat-tag"><b>4.9</b><small>★★★★★  ·  214 reviews</small></div>
+  </div>
+</section>
+
+<!-- ===== SERVICES ===== -->
+<section class="l8-services" id="services">
+  <div class="l8-services-head">
+    <div class="left">
+      <div class="label">— What We Make —</div>
+      <h2>Six processes,<br>one workshop.</h2>
+    </div>
+    <div class="right">Everything happens under one roof in Bridgnorth — design support, cutting, finishing, packing. No subbing out. No middlemen.</div>
+  </div>
+  <div class="l8-services-grid">
+    <div class="l8-service">
+      <div class="num">01</div>
+      <div class="wf-img" data-label="cnc routing"></div>
+      <h4>CNC Routing</h4>
+      <p>3-axis routing on aluminium, brass, hardwoods, plywood, MDF, acrylic. Bed size 2500 × 1250 mm.</p>
+      <div class="specs"><span>±<b>0.1mm</b></span><span>Up to <b>50mm</b></span></div>
+      <a class="more" href="#">Get a quote</a>
+    </div>
+    <div class="l8-service">
+      <div class="num">02</div>
+      <div class="wf-img" data-label="laser cutting"></div>
+      <h4>Laser Cutting</h4>
+      <p>2kW fibre laser. Cuts mild &amp; stainless steel, aluminium, brass. Engrave on metal, wood, leather, acrylic.</p>
+      <div class="specs"><span>±<b>0.05mm</b></span><span>Up to <b>12mm</b></span></div>
+      <a class="more" href="#">Get a quote</a>
+    </div>
+    <div class="l8-service">
+      <div class="num">03</div>
+      <div class="wf-img" data-label="engraving"></div>
+      <h4>Engraving</h4>
+      <p>Diamond-drag, rotary, laser. Brass plaques, signage, gift items, awards, machine ID plates. Single-piece OK.</p>
+      <div class="specs"><span>From <b>1 unit</b></span><span><b>5 day</b> lead</span></div>
+      <a class="more" href="#">Get a quote</a>
+    </div>
+    <div class="l8-service">
+      <div class="num">04</div>
+      <div class="wf-img" data-label="anodising"></div>
+      <h4>Anodising &amp; Finishing</h4>
+      <p>Type II anodising in 8 standard colours. Powder coat, brushed, polished, bead-blast. Done in-house.</p>
+      <div class="specs"><span><b>8</b> colours</span><span><b>7 day</b> lead</span></div>
+      <a class="more" href="#">Get a quote</a>
+    </div>
+    <div class="l8-service">
+      <div class="num">05</div>
+      <div class="wf-img" data-label="signage"></div>
+      <h4>Custom Signage</h4>
+      <p>Indoor &amp; outdoor signs, dimensional letters, wayfinding, plaques. Design support included.</p>
+      <div class="specs"><span><b>Design</b> incl.</span><span>UK <b>install</b></span></div>
+      <a class="more" href="#">Get a quote</a>
+    </div>
+    <div class="l8-service">
+      <div class="num">06</div>
+      <div class="wf-img" data-label="architectural"></div>
+      <h4>Architectural Metalwork</h4>
+      <p>Bespoke screens, balustrades, gates, façade panels. Working with architects and main contractors.</p>
+      <div class="specs"><span><b>BIM</b> ready</span><span><b>4–8 wk</b> lead</span></div>
+      <a class="more" href="#">Get a quote</a>
+    </div>
+    <div class="l8-service">
+      <div class="num">07</div>
+      <div class="wf-img" data-label="prototyping"></div>
+      <h4>One-off Prototyping</h4>
+      <p>One-piece runs welcome. Send a sketch or STEP file. Iteration encouraged — most projects go through 2–3 rounds.</p>
+      <div class="specs"><span>From <b>1 unit</b></span><span><b>3 day</b> turn</span></div>
+      <a class="more" href="#">Get a quote</a>
+    </div>
+    <div class="l8-service">
+      <div class="num">08</div>
+      <div class="wf-img" data-label="batch production"></div>
+      <h4>Batch Production</h4>
+      <p>Run sizes 10–5,000. Tooling held for repeat orders. Trade discounts past 50 units.</p>
+      <div class="specs"><span><b>10–5k</b> units</span><span><b>Trade</b> pricing</span></div>
+      <a class="more" href="#">Get a quote</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROCESS ===== -->
+<section class="l8-process" id="process">
+  <div class="l8-process-head">
+    <div class="label">— How It Works —</div>
+    <h2>Brief in. Parts out.</h2>
+    <p>Four steps. No mystery. No "we'll call you back next week."</p>
+  </div>
+  <div class="l8-process-strip">
+    <div class="l8-step is-done">
+      <div class="circle">1</div>
+      <h4>Send us your brief</h4>
+      <p>Drawing, CAD file, sketch on a napkin. PDF / DXF / DWG / STEP / AI / JPG — we'll work with what you've got.</p>
+      <div class="when">Takes 2 minutes</div>
+    </div>
+    <div class="l8-step is-done">
+      <div class="circle">2</div>
+      <h4>We review &amp; quote</h4>
+      <p>Tom or Joel reads your brief, suggests materials if it helps, and sends a fixed-price quote — within one working day.</p>
+      <div class="when">Within 24 hours</div>
+    </div>
+    <div class="l8-step">
+      <div class="circle">3</div>
+      <h4>We make it</h4>
+      <p>Once you approve, we cut, finish, and QC the work in our Bridgnorth workshop. You'll get a photo when it's done.</p>
+      <div class="when">Typically 3–10 days</div>
+    </div>
+    <div class="l8-step">
+      <div class="circle">4</div>
+      <h4>Collection or delivery</h4>
+      <p>Collect from the workshop, or we'll send it UK-wide on next-day pallet or courier. Tracked, signed-for, packaged properly.</p>
+      <div class="when">Next-day UK</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MATERIALS ===== -->
+<section class="l8-materials" id="materials">
+  <div class="l8-materials-head">
+    <div>
+      <div class="label">— Stock &amp; Finishes —</div>
+      <h2>Twelve materials, on the shelf.</h2>
+    </div>
+    <p>Plus a hundred more available to order with 1–3 day lead times. Tell us what you're making and we'll suggest the right grade and finish.</p>
+  </div>
+  <div class="l8-mat-grid">
+    <div class="l8-mat">
+      <div class="swatch alum"></div>
+      <h5>Aluminium 5083</h5>
+      <div class="meta"><b>In stock</b> · 1.5–10mm</div>
+    </div>
+    <div class="l8-mat">
+      <div class="swatch alum" style="filter: brightness(1.1);"></div>
+      <h5>Aluminium 6082</h5>
+      <div class="meta"><b>In stock</b> · 3–25mm</div>
+    </div>
+    <div class="l8-mat">
+      <div class="swatch steel"></div>
+      <h5>Mild Steel</h5>
+      <div class="meta"><b>In stock</b> · 1.5–12mm</div>
+    </div>
+    <div class="l8-mat">
+      <div class="swatch steel" style="filter: brightness(1.4);"></div>
+      <h5>Stainless 304</h5>
+      <div class="meta"><b>In stock</b> · 1–8mm</div>
+    </div>
+    <div class="l8-mat">
+      <div class="swatch brass"></div>
+      <h5>Brass CZ121</h5>
+      <div class="meta"><b>In stock</b> · 1–6mm</div>
+    </div>
+    <div class="l8-mat">
+      <div class="swatch brass" style="filter: brightness(0.85);"></div>
+      <h5>Bronze</h5>
+      <div class="meta">3 day lead</div>
+    </div>
+    <div class="l8-mat">
+      <div class="swatch oak"></div>
+      <h5>European Oak</h5>
+      <div class="meta"><b>In stock</b> · 18–40mm</div>
+    </div>
+    <div class="l8-mat">
+      <div class="swatch oak" style="filter: hue-rotate(-20deg);"></div>
+      <h5>American Walnut</h5>
+      <div class="meta">2 day lead</div>
+    </div>
+    <div class="l8-mat">
+      <div class="swatch ply"></div>
+      <h5>Birch Ply</h5>
+      <div class="meta"><b>In stock</b> · 6–24mm</div>
+    </div>
+    <div class="l8-mat">
+      <div class="swatch ply" style="filter: brightness(0.85);"></div>
+      <h5>MDF (Medite)</h5>
+      <div class="meta"><b>In stock</b> · 3–25mm</div>
+    </div>
+    <div class="l8-mat">
+      <div class="swatch acrylic"></div>
+      <h5>Cast Acrylic</h5>
+      <div class="meta"><b>In stock</b> · 30 colours</div>
+    </div>
+    <div class="l8-mat">
+      <div class="swatch acrylic" style="filter: brightness(0.7);"></div>
+      <h5>Polycarbonate</h5>
+      <div class="meta"><b>In stock</b> · 3–10mm</div>
+    </div>
+  </div>
+  <div class="l8-mat-foot">Don't see what you need? <a href="#quote">Tell us about your project →</a></div>
+</section>
+
+<!-- ===== PROJECTS ===== -->
+<section class="l8-projects" id="projects">
+  <div class="l8-projects-head">
+    <div>
+      <div class="label">— Past Projects —</div>
+      <h2>Things we made for people.</h2>
+    </div>
+    <div class="l8-projects-filters">
+      <div class="chip is-on">All</div>
+      <div class="chip">Architectural</div>
+      <div class="chip">Signage</div>
+      <div class="chip">Furniture</div>
+      <div class="chip">One-offs</div>
+    </div>
+  </div>
+  <div class="l8-projects-grid">
+    <div class="l8-project">
+      <div class="wf-img" data-label="brass screen detail"></div>
+      <div class="l8-project-body">
+        <div class="client">Hotel du Vin Bristol</div>
+        <h4>Pattern-cut brass restaurant screen</h4>
+        <p>3.4m × 2.1m feature screen for a hotel restaurant. Pattern designed by their architect, water-jet cut in 4mm CZ121, brushed and lacquered.</p>
+        <div class="stats">
+          <div><b>4 weeks</b>lead time</div>
+          <div><b>12 panels</b>volume</div>
+          <div><b>Brass</b>material</div>
+        </div>
+      </div>
+    </div>
+    <div class="l8-project">
+      <div class="wf-img" data-label="wooden signage"></div>
+      <div class="l8-project-body">
+        <div class="client">Forge &amp; Crown Clifton</div>
+        <h4>Dimensional oak pub sign</h4>
+        <p>Hand-finished oak signage, CNC-routed lettering, brass inlay for the crown. Installed on-site by our team.</p>
+        <div class="stats">
+          <div><b>10 days</b>lead time</div>
+          <div><b>1 unit</b>volume</div>
+          <div><b>Oak + brass</b>material</div>
+        </div>
+      </div>
+    </div>
+    <div class="l8-project">
+      <div class="wf-img" data-label="aluminium panels"></div>
+      <div class="l8-project-body">
+        <div class="client">Studio Bark Architects</div>
+        <h4>Anodised facade screen</h4>
+        <p>240 perforated aluminium panels for a public-library facade. Bronze-tone anodised. Repeat parametric pattern.</p>
+        <div class="stats">
+          <div><b>8 weeks</b>lead time</div>
+          <div><b>240 panels</b>volume</div>
+          <div><b>Alum 6082</b>material</div>
+        </div>
+      </div>
+    </div>
+    <div class="l8-project">
+      <div class="wf-img" data-label="acrylic awards"></div>
+      <div class="l8-project-body">
+        <div class="client">RIBA West Midlands</div>
+        <h4>Architecture award trophies</h4>
+        <p>14 trophies, laser-cut cast acrylic with sub-surface engraving. 3-day turnaround from final approval.</p>
+        <div class="stats">
+          <div><b>3 days</b>lead time</div>
+          <div><b>14 units</b>volume</div>
+          <div><b>Acrylic</b>material</div>
+        </div>
+      </div>
+    </div>
+    <div class="l8-project">
+      <div class="wf-img" data-label="steel balustrade"></div>
+      <div class="l8-project-body">
+        <div class="client">Private commission, Cotswolds</div>
+        <h4>Laser-cut steel staircase balustrade</h4>
+        <p>Powder-coated mild steel, hand-drawn pattern digitised and refined to suit cutting tolerances. 11m run.</p>
+        <div class="stats">
+          <div><b>6 weeks</b>lead time</div>
+          <div><b>11m</b>volume</div>
+          <div><b>Mild steel</b>material</div>
+        </div>
+      </div>
+    </div>
+    <div class="l8-project">
+      <div class="wf-img" data-label="plywood furniture"></div>
+      <div class="l8-project-body">
+        <div class="client">Severn &amp; Sons Joinery</div>
+        <h4>CNC-routed flatpack workbenches</h4>
+        <p>50-unit batch of birch-ply workbenches, tab-and-slot construction. Cut, dust-extracted, packed flat.</p>
+        <div class="stats">
+          <div><b>2 weeks</b>lead time</div>
+          <div><b>50 units</b>volume</div>
+          <div><b>Birch ply</b>material</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== QUOTE FORM (the heart) ===== -->
+<section class="l8-quote" id="quote">
+  <div class="l8-quote-inner">
+    <div class="l8-quote-pitch">
+      <div class="label">— Get A Quote —</div>
+      <h2>Send us your brief.</h2>
+      <p>One form. Drop in your drawings. You'll have a fixed-price quote in your inbox within 24 hours — or we'll buy you a pint.</p>
+      <ul>
+        <li>Reply within one working day</li>
+        <li>Fixed-price quote, not "from £X"</li>
+        <li>Design feedback included</li>
+        <li>Your files stay confidential — NDA on request</li>
+      </ul>
+    </div>
+
+    <form class="l8-quote-form">
+      <h3>Quote request</h3>
+      <div class="h-big">Tell us about your project.</div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Your name</label>
+          <div class="input">Sam Bradshaw</div>
+        </div>
+        <div class="field">
+          <label>Company</label>
+          <div class="input">Bradshaw Joinery Ltd</div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Email</label>
+          <div class="input">sam@bradshaw.co.uk</div>
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <div class="input">07700 900 220</div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>What kind of work?</label>
+          <div class="input">CNC routing  ▾</div>
+        </div>
+        <div class="field">
+          <label>Timeline</label>
+          <div class="input">Within 2 weeks  ▾</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Tell us about the project</label>
+        <textarea>10 off CNC-routed oak panels, approx 600×400mm, with through-cut decorative pattern (file attached). Need them finished with Osmo oil. Delivery to Stroud GL5. Happy to discuss material grade.</textarea>
+      </div>
+
+      <div class="field">
+        <label>Upload drawings / files (optional)</label>
+        <div class="dropzone">
+          <div class="ico">↑</div>
+          <b>Drag &amp; drop files here</b>
+          <small>PDF · DXF · DWG · STEP · AI · JPG · PNG  ·  up to 25MB each</small>
+          <div class="browse">Or browse files</div>
+        </div>
+        <div class="file-row">
+          <div class="fileico">DXF</div>
+          <div><b>panel_v3_final.dxf</b></div>
+          <small>284 KB</small>
+          <span class="x">✕</span>
+        </div>
+        <div class="file-row">
+          <div class="fileico">PDF</div>
+          <div><b>technical_drawing.pdf</b></div>
+          <small>1.2 MB</small>
+          <span class="x">✕</span>
+        </div>
+      </div>
+
+      <button type="button" class="submit">Send my brief →</button>
+      <div class="promise"><b>We'll reply within 1 working day.</b> Your files stay confidential.</div>
+    </form>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section class="l8-about" id="about">
+  <div class="l8-about-inner">
+    <div>
+      <div class="label">— The Workshop —</div>
+      <h2>17 years. Two brothers. One quietly serious workshop.</h2>
+      <p>Severn Cut started in 2008 in a garage in Bridgnorth. We're now in a 4,000 sq ft unit on the same road — two CNC machines, a fibre laser, three engravers, an anodising line, and a team of seven who actually like making things.</p>
+      <p>We work with architects, joiners, signmakers, museums, galleries, festivals, and one or two people who walked in off the street with a sketch. We treat the £80 job and the £80,000 job with the same care.</p>
+      <p>No project too small. No subbing out. No surprises on the invoice.</p>
+      <div class="creds">
+        <div class="item"><b>17</b><small>YEARS IN OPERATION</small></div>
+        <div class="item"><b>4,000</b><small>SQ FT WORKSHOP</small></div>
+        <div class="item"><b>7</b><small>PEOPLE ON THE FLOOR</small></div>
+      </div>
+    </div>
+    <div class="l8-about-img-wrap">
+      <div class="wf-img" data-label="workshop · tom &amp; joel · 4:5"></div>
+      <div class="badge-iso">
+        <div class="b">ISO</div>
+        <div><small>QUALITY</small><b>9001:2015</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="l8-faq" id="faq">
+  <div class="l8-faq-inner">
+    <div class="label">— Frequently Asked —</div>
+    <h2>The questions we get most.</h2>
+
+    <div class="l8-faq-item is-open">
+      <div class="q"><h4>Do you do one-off projects, or is there a minimum?</h4><div class="plus">+</div></div>
+      <div class="a">No minimum. We'll happily cut a single piece. The smallest invoice we've sent this year was £38 (a brass house number). The largest was £142,000 (a facade). We treat both the same.</div>
+    </div>
+    <div class="l8-faq-item">
+      <div class="q"><h4>What file formats do you accept?</h4><div class="plus">+</div></div>
+      <div class="a">For 2D cutting: DXF, DWG, AI, PDF (vector). For 3D: STEP, IGES, STL. We can also work from photos, scans, or pencil sketches — we'll digitise it for you (small charge applies).</div>
+    </div>
+    <div class="l8-faq-item">
+      <div class="q"><h4>How much will my project cost?</h4><div class="plus">+</div></div>
+      <div class="a">Depends on material, complexity, finish, and quantity. Send us the brief and we'll come back with a fixed price within a working day. No hidden charges, no "from" pricing — what you're quoted is what you pay.</div>
+    </div>
+    <div class="l8-faq-item">
+      <div class="q"><h4>What's your typical lead time?</h4><div class="plus">+</div></div>
+      <div class="a">For simple cutting jobs: 3–5 working days. For finished or anodised work: 7–10 days. For architectural projects: 4–8 weeks. Rush work possible — phone us and we'll see what we can do.</div>
+    </div>
+    <div class="l8-faq-item">
+      <div class="q"><h4>Can you deliver outside the Midlands?</h4><div class="plus">+</div></div>
+      <div class="a">Yes — UK-wide, next-day on most items. Pallet delivery for larger pieces. International by arrangement (we've shipped to France, Germany, and the US).</div>
+    </div>
+    <div class="l8-faq-item">
+      <div class="q"><h4>Do you sign NDAs?</h4><div class="plus">+</div></div>
+      <div class="a">Yes, no fuss. We'll sign yours, or use our standard one. Most projects don't need it but designers and inventors often appreciate the option.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== REVIEWS ===== -->
+<section class="l8-reviews">
+  <div class="l8-reviews-head">
+    <div class="label">— What Clients Say —</div>
+    <h2>4.9 out of 5 ★</h2>
+    <p>Across 214 reviews on Google, Trustpilot, and direct client feedback. Verified by request.</p>
+  </div>
+  <div class="l8-reviews-grid">
+    <div class="l8-review">
+      <div class="stars">★★★★★</div>
+      <p>"Tom quoted us within hours and the parts arrived two days early. The finish on the anodised panels was exactly right — we've already sent them three more jobs."</p>
+      <div class="who">
+        <div class="av"></div>
+        <div><b>Alice Chen, Studio Bark</b><small>Architectural — anodised façade</small></div>
+      </div>
+    </div>
+    <div class="l8-review">
+      <div class="stars">★★★★★</div>
+      <p>"I sent them a pencil sketch on a napkin. They came back with a digital version, three material options, and a fixed price. Workmanship is genuinely lovely. Will use again."</p>
+      <div class="who">
+        <div class="av"></div>
+        <div><b>Mark Gilbert</b><small>Private commission — oak signage</small></div>
+      </div>
+    </div>
+    <div class="l8-review">
+      <div class="stars">★★★★★</div>
+      <p>"We've used Severn Cut for 6 years now. They're our go-to for brass plaques, signage, and one-off bits for installations. Joel is sharp on the engineering side too."</p>
+      <div class="who">
+        <div class="av"></div>
+        <div><b>Sarah O'Donnell, OD Signs</b><small>Trade customer — repeat business</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="l8-foot">
+  <div class="l8-foot-cta">
+    <div>
+      <h3>Ready to send a brief?</h3>
+      <p>Fixed-price quote in your inbox within 24 hours.</p>
+    </div>
+    <a class="btn" href="#quote">Upload brief →</a>
+  </div>
+
+  <div class="l8-foot-grid">
+    <div>
+      <div class="brand"><div class="mark">SC</div>Severn Cut</div>
+      <p class="blurb">Precision CNC, laser cutting, and architectural metalwork. Based in Bridgnorth, Shropshire. UK-wide delivery.</p>
+    </div>
+    <div>
+      <h5>Services</h5>
+      <ul>
+        <li><a href="#">CNC routing</a></li>
+        <li><a href="#">Laser cutting</a></li>
+        <li><a href="#">Engraving</a></li>
+        <li><a href="#">Anodising</a></li>
+        <li><a href="#">Architectural</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Workshop</h5>
+      <ul>
+        <li><a href="#">Past projects</a></li>
+        <li><a href="#">The team</a></li>
+        <li><a href="#">Materials &amp; finishes</a></li>
+        <li><a href="#">Certifications</a></li>
+        <li><a href="#">Trade pricing</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Get in touch</h5>
+      <ul>
+        <li>Unit 14, Severn Park</li>
+        <li>Bridgnorth WV15 6QN</li>
+        <li><a href="tel:01746712880">01746 712 880</a></li>
+        <li><a href="mailto:quotes@severncut.co.uk">quotes@severncut.co.uk</a></li>
+        <li><a href="#">Mon–Fri 8am–5.30pm</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="legal">
+    <div>© 2026 Severn Cut Ltd · Co. no. 06443218 · VAT GB 938 1224 73</div>
+    <div>Privacy · Terms · ISO 9001:2015</div>
+  </div>
+</footer>
+
+<div class="l8-fab"><div class="btn">↑ Upload brief</div></div>
+
+</body>
+</html>

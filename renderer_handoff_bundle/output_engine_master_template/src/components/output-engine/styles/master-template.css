@@ -1,0 +1,57 @@
+/* Output Engine — shared section styles.
+   Imports must run after colors_and_type.css and the active preset CSS. */
+
+.oe-wrap { max-width: 1200px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px); }
+.oe-wrap-wide { max-width: 1320px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px); }
+
+.oe-section { padding: clamp(72px, 10vw, 120px) 0; }
+.oe-section--dark { background: var(--foundation-dark); color: var(--color-fg-on-dark); }
+.oe-section--wash { background: var(--foundation-wash); }
+
+.oe-eyebrow {
+  display: inline-block;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--site-primary, var(--brand-indigo));
+  margin: 0 0 16px;
+}
+.oe-eyebrow--on-dark { color: #7fd4cb; }
+
+.oe-h1, .oe-h2, .oe-h3, .oe-h4 {
+  font-family: var(--font-display);
+  color: var(--foundation-dark);
+  margin: 0; letter-spacing: var(--preset-tracking-display, -0.02em);
+  line-height: 1.05; font-weight: 600;
+}
+.oe-h2 { font-size: clamp(2rem, 3.2vw, 2.75rem); line-height: 1.1; }
+.oe-h3 { font-size: 1.375rem; letter-spacing: var(--preset-tracking-heading, -0.01em); line-height: 1.3; }
+.oe-h4 { font-size: 1.0625rem; letter-spacing: -0.005em; line-height: 1.35; }
+.oe-section--dark .oe-h1, .oe-section--dark .oe-h2,
+.oe-section--dark .oe-h3, .oe-section--dark .oe-h4 { color: #fff; }
+.oe-section--dark p { color: #cbd5e1; }
+
+.oe-lede { font-size: 19px; line-height: 1.55; color: var(--foundation-slate); max-width: 60ch; }
+.oe-section--dark .oe-lede { color: #cbd5e1; }
+
+.oe-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 20px; border: 0; border-radius: var(--preset-radius-sm, 8px);
+  font-family: inherit; font-weight: 600; font-size: 15px; line-height: 1; cursor: pointer;
+  text-decoration: none; transition: all 120ms var(--ease-standard);
+  white-space: nowrap;
+}
+.oe-btn--cta { background: var(--site-cta, var(--brand-coral)); color: #fff; }
+.oe-btn--cta:hover { filter: brightness(0.92); }
+.oe-btn--primary { background: var(--site-primary, var(--brand-indigo)); color: #fff; }
+.oe-btn--ghost { background: transparent; color: var(--foundation-dark); border: 1px solid var(--foundation-pale); }
+.oe-btn--on-dark { background: #fff; color: var(--foundation-dark); }
+
+.oe-btn-arrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--site-primary, var(--brand-indigo));
+  font-weight: 600; text-decoration: none; font-size: 15px;
+}
+.oe-btn-arrow:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

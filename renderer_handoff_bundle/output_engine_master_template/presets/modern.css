@@ -1,0 +1,21 @@
+/* ============================================================
+   OUTPUT ENGINE — Modern preset (default)
+   Apply via <body data-preset="modern"> or load this file.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+[data-preset="modern"], :root[data-preset-default] {
+  --font-display:      'Space Grotesk', system-ui, sans-serif;
+  --font-body:         'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --preset-radius-sm:  8px;
+  --preset-radius-md:  12px;
+  --preset-radius-lg:  20px;
+
+  --preset-shadow-card: 0 1px 3px rgba(15,25,35,0.06), 0 1px 2px rgba(15,25,35,0.04);
+  --preset-shadow-lift: 0 12px 32px rgba(15,25,35,0.08), 0 4px 8px rgba(15,25,35,0.04);
+
+  --preset-tracking-display: -0.025em;
+  --preset-tracking-heading: -0.01em;
+}
